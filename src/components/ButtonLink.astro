@@ -1,0 +1,36 @@
+---
+import { design } from "../config/design";
+
+interface Props {
+  href: string;
+  label?: string;
+  variant?: "primary" | "secondary";
+}
+
+const { href, label, variant = "primary" } = Astro.props;
+const buttonStyle = design.colors.buttons[variant];
+const isExternal = href.startsWith("http");
+---
+
+<a
+  class="button-link inline-flex h-[var(--button-height)] items-center justify-center gap-3 rounded-[var(--button-radius)] px-7 text-center font-bold no-underline transition-colors duration-200"
+  href={href}
+  target={isExternal ? "_blank" : undefined}
+  rel={isExternal ? "noreferrer" : undefined}
+  style={`--button-bg: ${buttonStyle.background}; --button-text: ${buttonStyle.text}; --button-bg-hover: ${buttonStyle.hoverBackground}; --button-text-hover: ${buttonStyle.hoverText};`}
+>
+  <slot>{label}</slot>
+</a>
+
+<style>
+  .button-link {
+    background: var(--button-bg);
+    color: var(--button-text);
+  }
+
+  .button-link:hover,
+  .button-link:focus-visible {
+    background: var(--button-bg-hover);
+    color: var(--button-text-hover);
+  }
+</style>

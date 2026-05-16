@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCuriosityNotePath, getCuriosityPalette } from "../config/curiosity";
+
+interface Props {
+  note: CollectionEntry<"curiosity">;
+  notes: CollectionEntry<"curiosity">[];
+  index?: number;
+}
+
+const { note, notes, index = 0 } = Astro.props;
+const palette = getCuriosityPalette(index);
+---
+
+<a
+  class="curiosity-card block h-full min-h-[220px] rounded-[var(--corner-radius)] p-6 no-underline"
+  href={getCuriosityNotePath(note, notes)}
+  style={`--card-bg: ${palette.background}; --card-text: ${palette.text}; --card-bg-hover: ${palette.hoverBackground};`}
+  aria-label={`Read notes: ${note.data.title}`}
+>
+  <article class="grid gap-4">
+    <h3>{note.data.title}</h3>
+    <p>{note.data.subtitle}</p>
+  </article>
+</a>

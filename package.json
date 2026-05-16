@@ -1,0 +1,22 @@
+{
+  "name": "coenclaassen",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "generate:redirects": "node scripts/generate-redirects.mjs",
+    "prebuild": "npm run generate:redirects",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@lucide/astro": "1.14.0",
+    "@tailwindcss/vite": "4.1.17",
+    "astro": "6.3.1",
+    "tailwindcss": "4.1.17"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

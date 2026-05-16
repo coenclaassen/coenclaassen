@@ -1,0 +1,31 @@
+export const site = {
+  name: "Coen Claassen",
+  title: "Coen Claassen — Product Development, Curiosity & Running Adventures",
+  description:
+    "Coen Claassen builds physical and digital products, thinks in public through Curiosity Conversations, and organizes running and orienteering adventures around maps, trails, and a bit of chaos.",
+  url: "https://coenclaassen.com",
+  locale: "en",
+  ogImage: "/og/ogCoen.png",
+  ogImageAlt: "Coen Claassen",
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  email: "hello@coenclaassen.com",
+  emailHref: "mailto:hello@coenclaassen.com",
+  linkedinHref: "https://www.linkedin.com/in/coenclaassen/",
+  offTrailRunHref: "https://offtrailrun.com",
+  knowsAbout: [
+    "product development",
+    "product engineering",
+    "product leadership",
+    "curiosity conversations",
+    "running adventures",
+    "orienteering",
+  ],
+  navigation: [
+    { label: "Home", href: "/" },
+    { label: "Work", href: "/#work" },
+    { label: "About", href: "/about" },
+    { label: "Curiosity", href: "/curiosity" },
+    { label: "Contact", href: "/#contact" },
+  ],
+} as const;

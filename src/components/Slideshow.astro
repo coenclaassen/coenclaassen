@@ -1,0 +1,103 @@
+---
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
+import { ChevronLeft, ChevronRight, Maximize } from "@lucide/astro";
+
+interface Props {
+  label?: string;
+}
+
+const { label = "Selected work slideshow" } = Astro.props;
+const slidesDirectory = join(process.cwd(), "public", "images", "slides");
+const getSlideNumber = (filename: string) => Number(filename.match(/\d+/)?.[0] ?? 0);
+const slides = readdirSync(slidesDirectory)
+  .filter((filename) => filename.endsWith(".webp") && /\d+/.test(filename))
+  .sort((a, b) => getSlideNumber(a) - getSlideNumber(b) || a.localeCompare(b))
+  .map((filename) => `/images/slides/${filename}`);
+---
+
+<section
+  id="work-slideshow"
+  class="work-slideshow relative h-[80vh] min-h-[260px] w-full overflow-hidden bg-[var(--color-black)]"
+  aria-label={label}
+  data-slideshow
+>
+  <div class="absolute inset-0 size-full max-w-none">
+    {slides.map((src, index) => (
+      <img
+        class:list={[
+          "absolute inset-0 h-full w-full max-w-none object-cover opacity-0 transition-opacity duration-700",
+          index === 0 && "opacity-100",
+        ]}
+        src={src}
+        alt={`Selected work slide ${index + 1}`}
+        loading={index === 0 ? "eager" : "lazy"}
+        data-slide
+      />
+    ))}
+  </div>
+
+  <div class="absolute bottom-4 right-4 z-10 flex gap-2">
+    <button class="inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-[var(--color-black)] shadow-sm transition-colors hover:bg-white" type="button" aria-label="Previous slide" data-slide-prev>
+      <ChevronLeft size={22} aria-hidden="true" />
+    </button>
+    <button class="inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-[var(--color-black)] shadow-sm transition-colors hover:bg-white" type="button" aria-label="View slideshow fullscreen" data-slide-fullscreen>
+      <Maximize size={21} aria-hidden="true" />
+    </button>
+    <button class="inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-[var(--color-black)] shadow-sm transition-colors hover:bg-white" type="button" aria-label="Next slide" data-slide-next>
+      <ChevronRight size={22} aria-hidden="true" />
+    </button>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll("[data-slideshow]").forEach((slideshow) => {
+    const slides = Array.from(slideshow.querySelectorAll("[data-slide]"));
+    const previousButton = slideshow.querySelector("[data-slide-prev]");
+    const nextButton = slideshow.querySelector("[data-slide-next]");
+    const fullscreenButton = slideshow.querySelector("[data-slide-fullscreen]");
+    let currentIndex = 0;
+    let autoplayId;
+
+    const showSlide = (nextIndex) => {
+      if (!slides.length) return;
+
+      slides[currentIndex].classList.remove("opacity-100");
+      slides[currentIndex].classList.add("opacity-0");
+      currentIndex = (nextIndex + slides.length) % slides.length;
+      slides[currentIndex].classList.remove("opacity-0");
+      slides[currentIndex].classList.add("opacity-100");
+    };
+
+    const stopAutoplay = () => {
+      window.clearInterval(autoplayId);
+      autoplayId = undefined;
+    };
+
+    const startAutoplay = () => {
+      stopAutoplay();
+      autoplayId = window.setInterval(() => showSlide(currentIndex + 1), 4000);
+    };
+
+    previousButton?.addEventListener("click", () => showSlide(currentIndex - 1));
+    nextButton?.addEventListener("click", () => showSlide(currentIndex + 1));
+    fullscreenButton?.addEventListener("click", () => {
+      if (document.fullscreenElement === slideshow) {
+        document.exitFullscreen();
+        return;
+      }
+
+      slideshow.requestFullscreen?.();
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement === slideshow) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    });
+
+    startAutoplay();
+  });
+</script>

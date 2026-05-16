@@ -1,0 +1,242 @@
+---
+import { getCollection } from "astro:content";
+import ButtonLink from "./ButtonLink.astro";
+import CuriosityCard from "./CuriosityCard.astro";
+import Layout from "./Layout.astro";
+import { sortCuriosityNotes } from "../config/curiosity";
+import { absoluteUrl, personJsonLd } from "../config/seo";
+import { site } from "../config/site";
+
+const notes = await getCollection("curiosity");
+const sortedNotes = sortCuriosityNotes(notes);
+const initialVisibleCount = 8;
+const revealCount = 6;
+const hasMoreNotes = sortedNotes.length > initialVisibleCount;
+const title = "Curiosity Conversations — Notes by Coen Claassen";
+const description =
+  "Conversation notes about design, systems, healthcare, AI, entrepreneurship, adventure, leadership, and better ways of thinking.";
+const canonical = "/curiosity";
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Curiosity Conversations",
+    url: absoluteUrl(canonical),
+    description,
+    creator: personJsonLd(),
+  },
+];
+---
+
+<Layout title={title} description={description} canonical={canonical} structuredData={structuredData}>
+  <section class="section-block">
+    <div class="site-container curiosity-intro-wrapper" data-curiosity-page>
+      <div class="curiosity-intro">
+        <h2>Better ideas begin with better conversations.</h2>
+        <div class="curiosity-intro-right">
+          <h4>Things you only learn by talking to real people.</h4>
+          <p>Everyone is interesting when you ask better questions.</p>
+          <p>These are notes from curiosity conversations that changed how I think, work, and make decisions.</p>
+        </div>
+      </div>
+
+      {
+        sortedNotes.length > 0 ? (
+          <Fragment>
+            <div class="curiosity-notes-grid grid min-w-0 gap-5 md:grid-cols-2 xl:grid-cols-3" data-curiosity-grid data-initial-count={initialVisibleCount} data-reveal-count={revealCount}>
+              {sortedNotes.map((note, index) => (
+                <div class:list={["min-w-0", index >= initialVisibleCount && "hidden"]} data-curiosity-item>
+                  <CuriosityCard note={note} notes={sortedNotes} index={index} />
+                </div>
+              ))}
+              <button
+                class="load-more-card curiosity-load-more-card min-h-[220px] rounded-[var(--corner-radius)] p-6 text-left"
+                type="button"
+                data-load-more-notes
+                hidden={!hasMoreNotes}
+              >
+                <article class="grid gap-4">
+                  <h3>Keep reading.<br />Load more notes.</h3>
+                </article>
+              </button>
+            </div>
+            <button
+              class="curiosity-load-more-inline"
+              type="button"
+              data-load-more-notes
+              hidden={!hasMoreNotes}
+            >
+              Load more notes
+            </button>
+          </Fragment>
+        ) : (
+          <p>No curiosity notes have been added yet.</p>
+        )
+      }
+
+      <section class="curiosity-cta">
+        <div class="curiosity-cta__inner">
+          <h4>Better conversations <br class="md:hidden" />start here.</h4>
+          <p class="curiosity-cta__text">
+            Listen before you judge. <br class="md:hidden" />Understand what someone feels, needs, and wants.
+            <br class="hidden md:block" />
+            If this sparked something in you, send a thought, a question, or someone worth meeting.
+          </p>
+          <div class="curiosity-cta__buttons">
+            <ButtonLink href={site.emailHref}>Email me</ButtonLink>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .curiosity-intro-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .curiosity-intro {
+    display: grid;
+    gap: 24px;
+  }
+
+  .curiosity-intro-right {
+    display: grid;
+    gap: 20px;
+  }
+
+  .curiosity-notes-grid {
+    margin-top: 20px;
+  }
+
+  .curiosity-load-more-card {
+    display: none;
+  }
+
+  .curiosity-load-more-card[hidden],
+  .curiosity-load-more-inline[hidden] {
+    display: none;
+  }
+
+  .curiosity-load-more-inline {
+    display: inline-flex;
+    width: 100%;
+    min-height: var(--button-height);
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    padding: 0 28px;
+    border: 0;
+    border-radius: var(--button-radius);
+    background: var(--color-light-grey);
+    color: var(--color-black);
+    cursor: pointer;
+  }
+
+  .curiosity-load-more-inline:hover,
+  .curiosity-load-more-inline:focus-visible {
+    background: var(--color-dark-grey);
+  }
+
+  .curiosity-cta {
+    margin-top: 80px;
+  }
+
+  .curiosity-cta__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .curiosity-cta__inner h4 {
+    margin-bottom: 30px;
+  }
+
+  .curiosity-cta__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 12px;
+    margin-top: 45px;
+  }
+
+  .curiosity-cta__buttons :global(.button-link) {
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .curiosity-intro-wrapper {
+      gap: 60px;
+    }
+
+    .curiosity-intro {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      column-gap: 80px;
+      align-items: start;
+    }
+
+    .curiosity-intro-right {
+      align-self: start;
+    }
+
+    .curiosity-load-more-card {
+      display: grid;
+    }
+
+    .curiosity-load-more-inline {
+      display: none;
+    }
+
+    .curiosity-cta__buttons {
+      width: auto;
+    }
+
+    .curiosity-cta__buttons :global(.button-link) {
+      width: auto;
+    }
+
+    .curiosity-notes-grid {
+      margin-bottom: 20px;
+    }
+
+  }
+</style>
+
+<script>
+  const curiosityPage = document.querySelector("[data-curiosity-page]");
+  const curiosityGrid = curiosityPage?.querySelector("[data-curiosity-grid]");
+
+  if (curiosityGrid) {
+    const items = Array.from(curiosityGrid.querySelectorAll("[data-curiosity-item]"));
+    const loadMoreButtons = Array.from(curiosityPage?.querySelectorAll("[data-load-more-notes]") ?? []);
+    const revealCount = Number(curiosityGrid.getAttribute("data-reveal-count") ?? 6);
+    let visibleCount = Number(curiosityGrid.getAttribute("data-initial-count") ?? 8);
+
+    const updateVisibleItems = () => {
+      items.forEach((item, index) => {
+        item.classList.toggle("hidden", index >= visibleCount);
+      });
+
+      loadMoreButtons.forEach((button) => {
+        button.toggleAttribute("hidden", visibleCount >= items.length);
+      });
+    };
+
+    loadMoreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        visibleCount += revealCount;
+        updateVisibleItems();
+      });
+    });
+
+    updateVisibleItems();
+  }
+</script>

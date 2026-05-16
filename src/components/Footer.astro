@@ -1,0 +1,17 @@
+---
+import { site } from "../config/site";
+
+interface Props {
+  variant?: "default" | "dark";
+}
+
+const { variant = "default" } = Astro.props;
+const bgClass = variant === "dark" ? "bg-[var(--color-black)] text-white" : "bg-white text-black";
+const borderClass = variant === "dark" ? "border-[rgba(255,255,255,0.1)]" : "border-[var(--color-dark-grey)]";
+---
+
+<footer class={`${bgClass} border-t ${borderClass}`}>
+  <div class="site-container py-[30px] opacity-70">
+    <p>&copy; 2026 {site.name}</p>
+  </div>
+</footer>

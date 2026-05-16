@@ -1,0 +1,125 @@
+---
+import ButtonLink from "./ButtonLink.astro";
+import Layout from "./Layout.astro";
+import { absoluteUrl, personJsonLd } from "../config/seo";
+import { site } from "../config/site";
+
+const title = "About Coen Claassen — Product Development, Leadership & Running";
+const description =
+  "Learn more about Coen Claassen, his work across product development, engineering, product leadership, Curiosity Conversations, and running/orienteering adventures.";
+const canonical = "/about";
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    name: title,
+    url: absoluteUrl(canonical),
+    description,
+    mainEntity: personJsonLd(),
+  },
+];
+---
+
+<Layout title={title} description={description} canonical={canonical} structuredData={structuredData}>
+  <section class="section-block bg-white">
+    <div class="site-container about-two-column about-two-column--center">
+      <div class="text-block about-intro__copy">
+        <h2>Hey, I'm Coen.</h2>
+        <div>
+          <p>I build physical and digital products, write notes from conversations, and spend a lot of time running.</p>
+          <p>Most of what I care about has something to do with making things, understanding people, or finding a path when the route is not obvious yet.</p>
+          <p>My brain turns most things into product or business ideas. Useful at work... slightly less useful when someone just wants to enjoy dinner 😅</p>
+        </div>
+      </div>
+
+      <div class="about-portrait">
+        <img src="/images/about/coen.webp" alt="Coen Claassen" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block bg-[var(--color-light-grey)]">
+    <div class="site-container about-two-column about-two-column--start">
+      <div class="text-block flex flex-col gap-5">
+        <h4>Most days</h4>
+        <div>
+          <p>I work on physical and digital products that need to make sense in real life. I navigate the early stages of ideas, where design decisions quietly lock in years of consequence.</p>
+          <p>My background moves through product design, engineering, and product leadership. You'll find the full timeline on <a class="about-inline-link" href={site.linkedinHref} target="_blank" rel="noreferrer">LinkedIn</a>.</p>
+        </div>
+      </div>
+
+      <div class="text-block flex flex-col gap-5">
+        <h4>When I'm not working</h4>
+        <div>
+          <p>I write notes from conversations with people, mostly because I want to ask better questions and understand how others see the world.</p>
+          <p>
+            I like running. Often in the forest, sometimes with a map, navigating from point to point through rough terrain.
+            {/* For people who like maps, trails, and a bit of chaos, I also organize small <a class="about-inline-link" href={site.offTrailRunHref} target="_blank" rel="noreferrer">running adventures</a>. */}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block bg-white">
+    <div class="site-container">
+      <div class="text-block grid gap-5">
+        <h4>Say hi</h4>
+        <div>
+          <p>Want to grab coffee, go for a run, or send something interesting?</p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href={site.emailHref}>Email me</ButtonLink>
+          <ButtonLink href={site.linkedinHref} variant="secondary">Connect on LinkedIn</ButtonLink>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-two-column {
+    display: grid;
+    gap: 40px;
+  }
+
+  .about-intro__copy {
+    display: grid;
+    gap: 20px;
+  }
+
+  .about-portrait img {
+    width: 100%;
+    border-radius: var(--corner-radius);
+  }
+
+  .about-portrait img {
+    height: auto;
+  }
+
+  .about-inline-link {
+    color: var(--link-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .about-inline-link:hover,
+  .about-inline-link:focus-visible {
+    color: var(--link-blue-hover);
+  }
+
+  @media (min-width: 768px) {
+    .about-two-column {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 80px;
+    }
+
+    .about-two-column--center {
+      align-items: center;
+    }
+
+    .about-two-column--start {
+      align-items: start;
+    }
+  }
+</style>

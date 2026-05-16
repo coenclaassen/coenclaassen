@@ -1,0 +1,98 @@
+---
+import "../styles/global.css";
+import Footer from "./Footer.astro";
+import Header from "./Header.astro";
+import SeoHead from "./SeoHead.astro";
+import { design } from "../config/design";
+import { site } from "../config/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
+  type?: "website" | "article";
+  publishedDate?: string;
+  modifiedDate?: string;
+  author?: string;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  showFooter?: boolean;
+}
+
+const isHomepage = Astro.url.pathname === "/";
+const { showFooter = true } = Astro.props;
+
+const typography = design.typography;
+const defaultCuriosityCardPalette = design.colors.curiosityCardPalettes[0];
+const fontStack = (family: string) => `"${family}", system-ui, sans-serif`;
+const cssVar = (name: string, value: string | number) => `    --${name}: ${value};`;
+const typeCssVars = Object.entries(typography).flatMap(([name, value]) => [
+  cssVar(`type-${name}-family`, fontStack(value.family)),
+  cssVar(`type-${name}-weight`, value.weight),
+  cssVar(`type-${name}-mobile-size`, value.mobile.size),
+  cssVar(`type-${name}-mobile-line-height`, value.mobile.lineHeight),
+  cssVar(`type-${name}-desktop-size`, value.desktop.size),
+  cssVar(`type-${name}-desktop-line-height`, value.desktop.lineHeight),
+]);
+const colorCssVars = [
+  cssVar("color-white", design.colors.white),
+  cssVar("color-black", design.colors.black),
+  cssVar("color-light-grey", design.colors.lightGrey),
+  cssVar("color-dark-grey", design.colors.darkGrey),
+  cssVar("color-light-grey-on-light-grey", design.colors.lightGreyOnLightGrey),
+  cssVar("link-color", design.colors.linkColor),
+  cssVar("link-hover", design.colors.linkHover),
+  cssVar("link-blue", design.colors.buttons.primary.background),
+  cssVar("link-blue-hover", design.colors.buttons.primary.hoverBackground),
+  cssVar("card-bg", defaultCuriosityCardPalette.background),
+  cssVar("card-text", defaultCuriosityCardPalette.text),
+  cssVar("card-bg-hover", defaultCuriosityCardPalette.hoverBackground),
+];
+const designCss = `
+  :root {
+${[
+  cssVar("corner-radius", `${design.cornerRadius}px`),
+  cssVar("button-radius", `${design.buttonRadius}px`),
+  cssVar("button-height", `${design.buttonHeight}px`),
+  cssVar("feature-height", `${design.featureHeight}px`),
+  cssVar("gutter-small", `${design.gutterSmall}px`),
+  cssVar("gutter-large", `${design.gutterLarge}px`),
+  cssVar("font-heading", fontStack(typography.h1.family)),
+  cssVar("font-body", fontStack(typography.p.family)),
+  ...colorCssVars,
+  ...typeCssVars,
+].join("\n")}
+  }
+`;
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <SeoHead
+      title={Astro.props.title}
+      description={Astro.props.description}
+      canonical={Astro.props.canonical}
+      ogImage={Astro.props.ogImage}
+      ogImageAlt={Astro.props.ogImageAlt}
+      ogImageWidth={Astro.props.ogImageWidth}
+      ogImageHeight={Astro.props.ogImageHeight}
+      type={Astro.props.type}
+      publishedDate={Astro.props.publishedDate}
+      modifiedDate={Astro.props.modifiedDate}
+      author={Astro.props.author}
+      structuredData={Astro.props.structuredData}
+    />
+    <style is:global set:html={designCss}></style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    {showFooter && <Footer variant={isHomepage ? "dark" : "default"} />}
+  </body>
+</html>
