@@ -18,7 +18,7 @@ const sortedNotes = sortCuriosityNotes(notes);
 const publishedDate = entry.data.date?.toISOString();
 const modifiedDate = entry.data.dateModified?.toISOString();
 const tldr = entry.data.tldr?.trim();
-const title = `${entry.data.title} | Notes from talking to people`;
+const title = `${entry.data.title} | Notes from talking to people | ${site.name}`;
 const description =
   entry.data.summary ??
   entry.data.description ??

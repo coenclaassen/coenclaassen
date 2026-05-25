@@ -3,7 +3,6 @@ export const design = {
     black: "#2D2D2D",
     grey: "#6B6B6B",
     white: "#FFFFFF",
-    stroke: "#E5F4F2",
   },
 
   typography: {
@@ -193,7 +192,6 @@ export const design = {
   stroke: {
     color: "#E5F4F2",
     weight: "1px",
-    position: "inside",
   },
 
   slideshow: {

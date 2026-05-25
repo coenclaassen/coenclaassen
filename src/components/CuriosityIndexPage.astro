@@ -60,11 +60,20 @@ const structuredData = [
           >
             {sortedNotes.map((note, index) => (
               <div class:list={[index >= desktopInitialVisibleCount && "hidden"]} data-curiosity-item>
-                <CuriosityCard note={note} notes={sortedNotes} index={index} />
+                <CuriosityCard note={note} notes={sortedNotes} />
               </div>
             ))}
-            <button class="load-more-card curiosity-load-card" type="button" data-load-more-notes hidden={!hasMoreNotes}>
-              Load more notes
+            <button
+              class="load-more-card curiosity-load-card"
+              type="button"
+              aria-label="Load more notes"
+              data-load-more-notes
+              hidden={!hasMoreNotes}
+            >
+              <span class="curiosity-load-card__content">
+                <span class="curiosity-load-card__title">Load more notes</span>
+                <span class="curiosity-load-card__meta" aria-hidden="true">&nbsp;</span>
+              </span>
             </button>
           </div>
 
@@ -125,6 +134,27 @@ const structuredData = [
     font-size: var(--type-p2-mobile-size);
     font-weight: var(--type-p2-weight);
     line-height: var(--type-p2-mobile-line-height);
+  }
+
+  .curiosity-load-card__content {
+    display: grid;
+    gap: 2px;
+  }
+
+  .curiosity-load-card__title {
+    color: var(--color-black);
+    font-family: var(--type-p2-family);
+    font-size: var(--type-p2-mobile-size);
+    font-weight: var(--type-p2-weight);
+    line-height: var(--type-p2-mobile-line-height);
+  }
+
+  .curiosity-load-card__meta {
+    color: var(--color-grey);
+    font-family: var(--type-p3-family);
+    font-size: var(--type-p3-mobile-size);
+    font-weight: var(--type-p3-weight);
+    line-height: var(--type-p3-mobile-line-height);
   }
 
   .curiosity-load-card[hidden],
@@ -203,6 +233,18 @@ const structuredData = [
       font-size: var(--type-p2-desktop-size);
       font-weight: var(--type-p2-desktop-weight);
       line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .curiosity-load-card__title {
+      font-size: var(--type-p2-desktop-size);
+      font-weight: var(--type-p2-desktop-weight);
+      line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .curiosity-load-card__meta {
+      font-size: var(--type-p3-desktop-size);
+      font-weight: var(--type-p3-desktop-weight);
+      line-height: var(--type-p3-desktop-line-height);
     }
 
     .curiosity-load-inline {

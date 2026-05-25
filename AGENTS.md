@@ -2,19 +2,19 @@
 
 ## Project
 
-Build and maintain a personal website for Coen Claassen.
+Build and maintain the personal website for Coen Claassen.
 
 The site is a personal portfolio and writing site. It presents:
-- personal positioning
+- a quiet personal homepage
 - selected work through a slideshow
-- Curiosity Coffee notes
+- Curiosity notes from conversations
 - about content
 - contact links
 
 ## Stack
 
 - Astro
-- Tailwind CSS
+- Tailwind CSS is installed, but most page styling currently lives in simple component CSS
 - Netlify deployment
 - GitHub repository
 - Mobile-first responsive design
@@ -30,36 +30,42 @@ The site is a personal portfolio and writing site. It presents:
 - Preserve structure and consistency over creativity.
 - Keep the code easy to edit manually.
 - Prefer explicit code over clever abstractions.
+- Do not simplify code just because a shorter version exists. Simplify only when it removes stale or confusing code.
 
-## Core Architecture
+## Current Architecture
 
 Use a small Astro structure with shared page components.
 
-Expected structure:
+Current structure:
 
 ```txt
 src/
   components/
     Layout.astro
     SeoHead.astro
-    Header.astro
-    Footer.astro
     ButtonLink.astro
-    CoffeeCard.astro
+    BackButton.astro
+    CuriosityCard.astro
     Slideshow.astro
     HomePage.astro
     AboutPage.astro
-    CoffeeIndexPage.astro
-    CoffeeNotePage.astro
+    CuriosityIndexPage.astro
+    CuriosityNotePage.astro
   config/
+    curiosity.ts
     design.ts
+    seo.ts
     site.ts
   content/
-    coffee/
+    curiosity/
+  lib/
+    curiositySlug.js
   pages/
     index.astro
     about.astro
-    coffee/
+    robots.txt.ts
+    sitemap.xml.ts
+    curiosity/
       index.astro
       [slug].astro
   styles/
@@ -68,42 +74,46 @@ src/
 public/
   images/
     slides/
-    coffee/
     about/
+  og/
 ```
+
+The current site does not render a global header or footer. Do not add global navigation or a footer unless explicitly requested.
 
 ## File Responsibilities
 
 - `src/config/design.ts` = reusable design values only.
-- `src/config/site.ts` = site metadata, canonical URL, navigation items, email link, LinkedIn link, and external URLs.
-- `src/content/coffee/` = markdown files for Curiosity Coffee notes.
-- `src/components/Layout.astro` = shared document layout.
+- `src/config/site.ts` = site metadata, canonical URL, email link, LinkedIn link, Off Trail Run link, and external URLs.
+- `src/config/seo.ts` = shared SEO helpers.
+- `src/config/curiosity.ts` = Curiosity note sorting and public URL helpers.
+- `src/content/curiosity/` = markdown files for Curiosity notes.
+- `src/components/Layout.astro` = shared document layout and design CSS variables.
 - `src/components/SeoHead.astro` = shared SEO/head metadata.
-- `src/components/Header.astro` = desktop and mobile navigation.
-- `src/components/Footer.astro` = footer content.
 - `src/components/ButtonLink.astro` = reusable link styled as a button.
-- `src/components/CoffeeCard.astro` = reusable coffee note preview card.
+- `src/components/BackButton.astro` = reusable back link/button.
+- `src/components/CuriosityCard.astro` = reusable Curiosity note preview card.
 - `src/components/Slideshow.astro` = homepage work slideshow.
-- `src/components/HomePage.astro` = shared homepage markup and styling.
+- `src/components/HomePage.astro` = shared homepage markup, styling, scroll cue, and homepage page data.
 - `src/components/AboutPage.astro` = shared about page markup and styling.
-- `src/components/CoffeeIndexPage.astro` = shared coffee index markup and styling.
-- `src/components/CoffeeNotePage.astro` = shared coffee article markup and styling.
+- `src/components/CuriosityIndexPage.astro` = shared Curiosity index markup, styling, and load-more behavior.
+- `src/components/CuriosityNotePage.astro` = shared Curiosity article markup and styling.
 - `src/pages/index.astro` = route wrapper for `/`.
 - `src/pages/about.astro` = route wrapper for `/about`.
-- `src/pages/coffee/index.astro` = route wrapper for `/coffee`.
-- `src/pages/coffee/[slug].astro` = route wrapper for `/coffee/NN`.
-- `src/styles/global.css` = Tailwind import, font setup, global base styles, and shared global CSS.
+- `src/pages/robots.txt.ts` = generated robots response with the sitemap URL.
+- `src/pages/sitemap.xml.ts` = generated sitemap response for canonical site pages and Curiosity notes.
+- `src/pages/curiosity/index.astro` = route wrapper for `/curiosity`.
+- `src/pages/curiosity/[slug].astro` = route wrapper for Curiosity note pages.
+- `src/styles/global.css` = Tailwind import, font setup, global base styles, shared card styles, and article content styles.
 - `public/images/slides/` = work slideshow images.
-- `public/images/about/` = about page images.
-- `public/images/coffee/` = reserved for possible future coffee note images, but do not use images for coffee notes now.
+- `public/images/about/coen.webp` = about page image. This file may be replaced manually with a new profile picture.
+- `public/og/ogCoen.png` = default Open Graph image.
 
 ## Implementation Rules
 
 - Use Astro, not React.
-- Use Tailwind CSS for styling.
 - Use semantic HTML.
 - Use a mobile-first approach.
-- Keep interactions lightweight.
+- Keep interactions lightweight and native.
 - Keep route files minimal: they should only render shared page components.
 - Do not add extra dependencies unless clearly needed.
 - Prefer consistency over clever abstractions.
@@ -115,28 +125,23 @@ public/
 ## Dependency Rules
 
 - Do not add dependencies unless clearly necessary.
-- Prefer Astro and Tailwind built-ins.
-- Use native HTML behavior where possible.
+- Prefer Astro, native browser APIs, and the current CSS setup.
 - Use the native Fullscreen API for the slideshow.
+- Use the Screen Orientation API only as an optional enhancement for mobile slideshow fullscreen.
 - Do not add a slideshow/carousel library.
 - Do not add a menu library.
 - Use lucide icons only for icons.
-- If lucide is not installed, add the smallest appropriate Astro-compatible lucide dependency.
 
 ## Icon Rules
 
 Use lucide icons only.
 
-Allowed icons for current functionality:
-- `Menu`
-- `X`
+Current active icons:
+- `ChevronDown`
 - `ChevronLeft`
 - `ChevronRight`
-- `Maximize`
-- `Mail`
-- `Linkedin`
-- `ArrowRight`
-- `ExternalLink`
+- `Maximize2`
+- `Minimize2`
 
 Rules:
 - Do not create custom SVG icons.
@@ -147,24 +152,15 @@ Rules:
 
 ## Navigation Rules
 
-Desktop navigation appears as a simple top navbar:
+The current site does not use a global desktop or mobile navigation bar.
 
-- Home → `/`
-- Work → `/#work`
-- About → `/about`
-- Coffee → `/coffee`
-- Contact → `/#contact`
+Current navigation behavior:
+- Homepage is the main entry point.
+- `/about`, `/curiosity`, and Curiosity article pages use `BackButton` links.
+- Homepage work anchor is `/#work`.
+- Homepage contact anchor is `/#contact`.
 
-Mobile navigation:
-- Use a minimal menu.
-- Show lucide `Menu` when closed.
-- Clicking `Menu` opens the nav items stacked vertically.
-- When open, the icon changes to lucide `X`.
-- Clicking `X` closes the menu.
-- Clicking any nav item closes the menu.
-- Keep this lightweight with a small native script.
-- Do not use framework state.
-- Do not add menu animation libraries.
+Do not add a global header, footer, or mobile menu unless explicitly requested.
 
 ## Pages And Segments
 
@@ -173,118 +169,134 @@ Mobile navigation:
 Homepage segments:
 
 1. Hero
-   - Headline: `Good things rarely start clear.`
-   - Subheading: `Things I build, think about, and care about.`
-   - Intro text
-   - CTA: Email me
-   - CTA: See more
+   - Full viewport height on desktop and mobile.
+   - Centered vertically.
+   - Headline: `Somehow, you ended up here.`
+   - Supporting text: `This is where you'll find stuff I've built and things I think about.`
 
 2. Work section
    - Anchor: `id="work"`
-   - Headline: `Products start as chaos.`
-   - Subheading: `My work is finding direction before the chaos turns into cost.`
-   - Supporting text
-   - Slideshow
+   - Headline: `Products I've helped build`
+   - Supporting text:
+     - `My job is finding direction before the chaos turns into cost.`
+     - `I turn half-ideas and "this will never work" into things teams can actually build and ship.`
+   - On desktop, the work text starts immediately after the hero.
+   - On desktop, keep about `15svh` between the work text and slideshow.
+   - Slideshow follows the work text.
 
-3. Coffee preview section
-   - Headline: `Better ideas begin with better conversations.`
-   - Subheading: `Things you only learn by talking to real people.`
-   - Supporting text
-   - Show latest 3 coffee notes
-   - CTA: See all notes
+3. Curiosity preview section
+   - Headline: `Notes from talking to people`
+   - Supporting text:
+     - `Everyone has something interesting going on. You just have to ask the right questions.`
+     - `These are a few conversations I keep thinking about.`
+   - Show the latest 2 Curiosity notes.
+   - On desktop, show a third grid card linking to `/curiosity` with `See more notes.`
+   - On mobile, show a `See more notes` button below the cards.
+   - On desktop, keep about `45svh` between the slideshow and this section so the previous shadow clears.
 
 4. Contact section
    - Anchor: `id="contact"`
-   - Headline: `Adventures have to start somewhere.`
-   - Subheading: `Share an idea, a thought, or just say hi.`
-   - Supporting text
+   - Full viewport height on desktop.
+   - Centered vertically on desktop.
+   - Headline: `Still here?`
+   - Supporting text: `If you made it this far, we probably get along.`
    - CTA: Email me
-   - CTA: Connect on LinkedIn
+   - CTA: More about me
+
+5. Scroll cue
+   - A small lucide `ChevronDown` cue may appear on the initial hero after a delay.
+   - It scrolls to `#work`.
+   - It is dismissed after the user scrolls or interacts.
 
 ### `/about`
 
 About page segments:
 
-1. Intro
-   - Headline: `Hey, I’m Coen.`
+1. Back button to `/`
+2. Intro
+   - Headline: `More about me.`
    - Personal intro text
-   - Large image placeholder or image if available
-
-2. Most days
-
-3. When I’m not working
-
-4. Say hi
+   - Image: `/images/about/coen.webp`
+3. Most days
+4. When I'm not working
+5. Now what?
    - CTA: Email me
    - CTA: Connect on LinkedIn
 
-### `/coffee`
+### `/curiosity`
 
-Coffee index page segments:
+Curiosity index page segments:
 
-1. Intro
-   - Headline: `Better ideas begin with better conversations.`
-   - Subheading: `Things you only learn by talking to real people.`
-   - Supporting text
+1. Back button to `/`
+2. Intro
+   - Headline: `Notes from talking to people`
+   - Supporting text matches the homepage Curiosity preview.
+3. Curiosity notes grid
+   - Show Curiosity markdown files from `src/content/curiosity/`.
+   - Sort latest first by numeric note slug/id using `sortCuriosityNotes`.
+   - Mobile initially shows 6 notes.
+   - Desktop initially shows 8 notes plus a grid-style `Load more notes` card when more notes exist.
+   - Load more reveals 6 more notes at a time.
+4. Bottom CTA
+   - Desktop text: `Talk to people. It works.`
+   - Mobile headline: `Talk to people. It works.`
+   - CTA: Email me
+   - CTA: Back home
 
-2. Coffee notes grid
-   - Show all coffee markdown files from `src/content/coffee/`
-   - Sort latest first by `date`
-   - If `date` is missing, fall back to highest `id`
-   - Card per note
-
-Coffee card fields:
+Curiosity card fields:
 - `title`
-- `subtitle`
-- `name`
-- `Read notes` CTA
+- `With {name}`
 
-Do not show:
+Do not show on cards:
+- `subtitle`
 - `date`
 - `location`
 - `image`
 - `imageAlt`
 
-### `/coffee/NN`
+### `/curiosity/[slug]`
 
-Individual coffee note page.
+Individual Curiosity note page.
 
 Article header should show:
+- Back button to `/curiosity`
+- Intro sentence: `I had coffee with {name}. Notes below.`
+- If `website` exists, link the person's name.
 - `title`
 - `subtitle`
-- `name`
-- optional `website` link if present
+- optional `TLDR` section if `tldr` exists
 
 Article body:
 - Render the markdown body normally.
 
-Footer:
-- Simple `Back to all notes` link.
+Footer CTA:
+- `See what else I build`
+- `See more notes`
 
-Do not show:
+Do not visibly show:
 - `date`
+- `dateModified`
 - `location`
 - `image`
 - `imageAlt`
 
-## Coffee Content Collection
+## Curiosity Content Collection
 
-Coffee markdown files live in:
+Curiosity markdown files live in:
 
 ```txt
-src/content/coffee/
+src/content/curiosity/
 ```
 
 Example file names:
 
 ```txt
-coffee01.md
-coffee02.md
-coffee03.md
-coffee17.md
+1.md
+2.md
+17.md
 ```
 
-Each coffee note should use frontmatter for metadata and normal markdown for the article content.
+Each Curiosity note should use frontmatter for metadata and normal markdown for the article content.
 
 Required frontmatter:
 
@@ -294,27 +306,31 @@ slug: "17"
 name: "Noa Smolenaars"
 title: "Empathy isn't the full story."
 subtitle: "Why good intentions can still exclude people."
-date: "2026-03-06"
 ```
 
 Optional frontmatter:
 
 ```yaml
+tldr: "Short summary."
+summary: "SEO summary."
+description: "SEO fallback description."
+date: "2026-03-06"
+dateModified: "2026-03-10"
 website: "https://www.noasmolenaars.com/"
 location: "Catharina Ziekenhuis Eindhoven"
 ```
 
 Rules:
-- `date` is used for sorting only.
+- `date` and `dateModified` are for metadata and SEO only.
 - `location` is internal reference only.
-- Do not display `date` or `location` on the website.
-- Do not include `image` or `imageAlt`.
-- Coffee pages are text-only for now.
+- Do not display `date`, `dateModified`, or `location` on the website.
+- Do not include or display Curiosity note images for now.
+- Curiosity pages are text-only for now.
 - The article body should use standard markdown headings, paragraphs, lists, links, and emphasis.
 - Do not use `paragraph1Title`, `paragraph1Body`, or similar numbered content fields.
 - Do not parse body content manually for cards; cards should use frontmatter only.
-- New coffee markdown files should automatically appear on `/coffee`.
-- The latest 3 coffee markdown files should automatically appear on `/`.
+- New Curiosity markdown files should automatically appear on `/curiosity`.
+- The latest 2 Curiosity markdown files should automatically appear on `/`.
 
 ## Slideshow Rules
 
@@ -326,29 +342,31 @@ Image location:
 public/images/slides/
 ```
 
-Expected slide names:
+Current slide naming pattern:
 
 ```txt
 slide01.webp
 slide02.webp
 slide03.webp
-slide04.webp
-slide05.webp
+...
 ```
 
 Functionality:
+- Read numbered `.webp` files from `public/images/slides/`.
+- Sort slides by number ascending.
 - Automatically advance every 4 seconds.
 - Use a smooth fade transition.
 - Loop from final slide back to first slide.
-- Show controls at the bottom right.
 - Previous button uses lucide `ChevronLeft`.
-- Fullscreen button uses lucide `Maximize`.
+- Fullscreen button uses lucide `Maximize2` and `Minimize2`.
 - Next button uses lucide `ChevronRight`.
 - Previous loops backward from first slide to final slide.
 - Next loops forward from final slide to first slide.
 - Fullscreen uses the native Fullscreen API.
+- On mobile, tapping the slideshow enters fullscreen.
+- On mobile fullscreen, request landscape orientation when the browser supports it.
 - When fullscreen starts, stop autoplay.
-- When fullscreen exits, resume autoplay.
+- When fullscreen exits, resume autoplay and unlock orientation when supported.
 - Keep buttons visible in fullscreen.
 - Keep implementation basic and native.
 - Do not add a slideshow library.
@@ -356,82 +374,105 @@ Functionality:
 
 ## Design Values
 
-Use these as implementation constraints, not suggestions.
+Use `src/config/design.ts` as the reusable design source of truth.
+
+Current design values:
 
 ```ts
-cornerRadius = 20
-buttonRadius = 999
-buttonHeight = 60
-featureHeight = 90
-gutterSmall = 20
-gutterLarge = 30
+colors.black = "#2D2D2D"
+colors.grey = "#6B6B6B"
+colors.white = "#FFFFFF"
+stroke.color = "#E5F4F2"
+
+button.height = "50px"
+button.radius = "25px"
+card.radius = "20px"
+
+layout.maxWidth.default = "1280px"
+layout.maxWidth.article = "720px"
+layout.sidePadding.mobile = "30px"
+layout.sidePadding.desktop = "60px"
+layout.spacer = "250px"
+layout.topButtonOffset.mobile = "30px"
+layout.topButtonOffset.desktop = "60px"
+layout.topContentOffset = "100px"
+layout.noteIntroGap = "30px"
+layout.articleHeadingGap.mobile = "80px"
+layout.articleHeadingGap.desktop = "120px"
+layout.sectionGap.mobile = "130px"
+layout.sectionGap.desktop = "150px"
+
+slideshow.interval = 4000
+slideshow.height = "60vh"
 ```
 
 ## Typography
 
 Fonts:
-- `h1 = Poppins, 700`
-- `h2 = Poppins, 700`
-- `h3 = Poppins, 700`
-- `h4 = Poppins, 400`
-- `h5 = Manrope, 400`
-- `h6 = Manrope, 700`
-- `p = Manrope, 400`
+- Heading display: `Instrument Serif`
+- Body and UI: `DM Sans`
 
 Desktop sizes:
-- `h1 = 67px / 105%`
-- `h2 = 38px / 130%`
-- `h3 = 28px / 130%`
-- `h4 = 21px / 150%`
-- `h5 = 21px / 150%`
-- `h6 = 18px / 150%`
-- `p = 16px / 150%`
+- `h1 = 46px / 130% / 400`
+- `h2 = 30px / 130% / 400`
+- `h3 = 30px / 130% / 400`
+- `p1 = 18px / 150% / 300`
+- `p2 = 16px / 150% / 300`
+- `p3 = 14px / 150% / 300`
+- `btn = 15px / 130% / 500`
+- `cta = 40px / 130% / 400`
+- `n1 = 22px / 150% / 300`
+- `n2 = 16px / 150% / 300`
+- `n0 = 16px / 150% / 300`
 
 Mobile sizes:
-- `h1 = 67px / 105%`
-- `h2 = 38px / 130%`
-- `h3 = 21px / 130%`
-- `h4 = 16px / 150%`
-- `h5 = 16px / 150%`
-- `h6 = 18px / 150%`
-- `p = 16px / 150%`
+- `h1 = 40px / 130% / 400`
+- `h2 = 28px / 130% / 400`
+- `h3 = 28px / 130% / 400`
+- `p1 = 18px / 150% / 300`
+- `p2 = 15px / 150% / 300`
+- `p3 = 13px / 150% / 300`
+- `btn = 15px / 130% / 500`
+- `cta = 40px / 130% / 400`
+- `n1 = 18px / 150% / 300`
+- `n2 = 15px / 150% / 300`
+- `n0 = 15px / 150% / 300`
 
 Rules:
-- Use Poppins for headings.
-- Use Manrope for body text.
 - Keep typography easy to update globally.
-- Do not scatter font sizes across many files if a shared style is more maintainable.
+- Prefer existing global type classes and CSS variables.
+- Do not scatter font sizes across many files if a shared type class is already available.
 
 ## Colors
 
+Current color system:
+
 ```ts
-white = "#ffffff"
-black = "#1d1d1f"
-lightGrey = "#f5f5f7"
-darkGrey = "#ececf0"
-lightAccent = "#cffafe"
-midAccent = "#06b6d4"
-darkAccent = "#0891b2"
+black = "#2D2D2D"
+grey = "#6B6B6B"
+white = "#FFFFFF"
+stroke = "#E5F4F2"
 ```
 
 Rules:
 - Keep color usage easy to update.
 - Avoid spreading raw color values unnecessarily across multiple files.
-- Use the cyan accent system for CTAs and highlights.
-- Keep the base visual language clean and minimal.
+- Keep the base visual language clean, quiet, and minimal.
+- Do not introduce accent colors unless explicitly requested.
 
 ## Layout Rules
 
 - Max page width: `1280px`.
+- Article max width: `720px`.
 - Breakpoint from mobile to desktop: `768px`.
 - Page horizontal padding:
-  - mobile: `px-[30px]`
-  - desktop: `md:px-[55px]`
+  - mobile: `30px`
+  - desktop: `60px`
 - Keep all content centered within the max page width.
 - Stack content vertically on mobile unless stated otherwise.
-- Use a simple grid for coffee cards:
+- Use a simple grid for Curiosity cards:
   - mobile: 1 column
-  - tablet/desktop: 2 or 3 columns depending on available space
+  - desktop: 3 columns
 - Do not invent complex layout systems.
 
 ## Styling Rules
@@ -441,32 +482,31 @@ Rules:
 - Keep internal spacing simple and consistent.
 - Do not introduce alternate spacing systems.
 - Use rounded corners consistently.
-- Use pill-shaped buttons based on `buttonRadius = 999`.
-- Keep buttons at `buttonHeight = 60` where practical.
-- Keep styling readable in Tailwind and easy to edit manually.
+- Keep button styling based on `button.height` and `button.radius`.
+- Keep styling readable and easy to edit manually.
+- Use component CSS for page-specific styles unless an existing global class is the better local pattern.
 
 ## SEO Rules
 
 Use `SeoHead.astro` for shared SEO metadata.
 
-Add page-specific SEO for:
-- `/`
-- `/about`
-- `/coffee`
-- `/coffee/NN`
-
-Coffee note SEO should derive from frontmatter:
-- `title`
-- `subtitle`
-- `name`
-
-Canonical URL:
-- Use the canonical site URL from `src/config/site.ts`.
-- Use `https://coenclaassen.com` unless changed in site config.
+Current SEO behavior:
+- Simple title, description, canonical, Open Graph, and Twitter metadata.
+- Canonical URL uses `site.url` from `src/config/site.ts`.
+- JSON-LD is present for homepage, about page, Curiosity index, and Curiosity articles.
+- `/sitemap.xml` is generated from canonical routes and Curiosity notes that have summaries.
+- `/robots.txt` allows crawling and points to the sitemap.
+- Curiosity note SEO derives from frontmatter where available:
+  - `title`
+  - `subtitle`
+  - `summary`
+  - `description`
+  - `name`
+  - `date`
+  - `dateModified`
 
 Rules:
 - Keep canonical URLs and Open Graph metadata in sync.
-- Do not add structured data unless explicitly requested.
 - Do not add analytics unless explicitly requested.
 - Keep SEO simple and maintainable.
 
@@ -474,8 +514,8 @@ Rules:
 
 - Use WebP for photographic raster images.
 - Slideshow files live in `public/images/slides/`.
-- About page image should live in `public/images/about/`.
-- Do not use coffee note images for now.
+- About page image lives at `public/images/about/coen.webp`.
+- Do not use Curiosity note images for now.
 - Do not add unused PNG fallbacks unless explicitly requested.
 - Image paths should be predictable and easy to replace manually.
 
@@ -484,7 +524,7 @@ Rules:
 Do not over-focus on accessibility, but avoid sloppy implementation.
 
 Minimum rules:
-- Use semantic HTML: `<nav>`, `<main>`, `<section>`, `<article>`, `<header>`, `<footer>`.
+- Use semantic HTML: `<main>`, `<section>`, `<article>`, `<header>`, `<footer>` where appropriate.
 - Buttons must be real `<button>` elements.
 - Links must be real `<a>` elements.
 - Slideshow controls should have simple labels.
@@ -497,30 +537,25 @@ Minimum rules:
 - Do not rewrite or improve copy unless explicitly requested.
 - Preserve provided wording except for minor syntax fixes required by code.
 - Do not invent new visible sections.
-- Do not invent fake coffee notes.
-- Do not show date or location for coffee notes.
+- Do not invent fake Curiosity notes.
+- Do not show date or location for Curiosity notes.
 - Keep all visible copy easy to edit manually.
 
 ## Preferred Implementation Order
 
-1. Inspect existing Astro and Tailwind setup.
+1. Inspect existing Astro setup.
 2. Read this `AGENTS.md`.
-3. Check `src/config/design.ts` and update only if reusable design values are missing.
-4. Check `src/config/site.ts` and update site metadata, navigation, and contact links as needed.
-5. Implement shared layout, SEO, header, and footer.
-6. Implement coffee content collection.
-7. Implement coffee card and coffee listing behavior.
-8. Implement homepage content and latest 3 coffee notes.
-9. Implement slideshow with native behavior.
-10. Implement about page.
-11. Implement coffee index page.
-12. Implement coffee article page.
-13. Verify routes, anchors, mobile menu, slideshow, coffee sorting, and SEO.
-14. Run the relevant build/check command and fix errors.
+3. Check `src/config/design.ts` before changing reusable design values.
+4. Check `src/config/site.ts` before changing metadata or contact links.
+5. Keep route wrappers minimal.
+6. Update shared page components for visible page changes.
+7. Update Curiosity content or helpers only when the request touches notes or note URLs.
+8. Verify routes, anchors, slideshow, Curiosity sorting, load-more behavior, and SEO when affected.
+9. Run the relevant build/check command and fix errors.
 
 ## If Something Is Unclear
 
-- Choose the simplest implementation that matches the rules above.
+- Choose the simplest implementation that matches these rules.
 - Avoid over-engineering.
 - Do not redesign the site unless explicitly asked.
 - Keep structure shared and content easy to edit.
@@ -538,20 +573,19 @@ Minimum rules:
 ## Done When
 
 - The homepage renders at `/`.
-- The Work nav item scrolls to `/#work`.
-- The Contact nav item scrolls to `/#contact`.
+- The Work anchor works at `/#work`.
+- The Contact anchor works at `/#contact`.
 - The About page renders at `/about`.
-- The Coffee index renders at `/coffee`.
-- Individual coffee notes render at `/coffee/NN`.
+- The Curiosity index renders at `/curiosity`.
+- Individual Curiosity notes render at their generated `/curiosity/[slug]` paths.
 - Shared markup exists in one component per page type.
 - Route files remain minimal.
-- Desktop navigation works.
-- Mobile menu opens and closes with lucide `Menu` and `X`.
 - Slideshow renders slide WebP files.
 - Slideshow autoplay, previous, next, loop, fullscreen pause, and fullscreen resume work.
-- Latest 3 coffee notes appear on the homepage.
-- All coffee notes appear on `/coffee` latest first.
-- Coffee cards do not show date or location.
-- Coffee article pages do not show date or location.
+- Mobile slideshow tap opens fullscreen and requests landscape when supported.
+- Latest 2 Curiosity notes appear on the homepage.
+- All Curiosity notes appear on `/curiosity` latest first by numeric slug/id.
+- Curiosity cards do not show subtitle, date, location, or images.
+- Curiosity article pages do not visibly show date, location, or images.
 - SEO metadata is present for all routes.
 - Code is clean, internally consistent, and easy to update.

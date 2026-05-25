@@ -17,7 +17,6 @@ interface Props {
   modifiedDate?: string;
   author?: string;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
-  showFooter?: boolean;
 }
 
 const fontStack = (family: string) =>
@@ -92,7 +91,6 @@ const designVars = [
   cssVar("soft-shadow", softShadow),
   cssVar("motion-hover-y", design.motion.hoverTranslateY),
   cssVar("motion-transition", design.motion.transition),
-  cssVar("font-heading", fontStack(design.typography.mobile.h1.font)),
   cssVar("font-body", fontStack(design.typography.mobile.p2.font)),
   cssVar("slideshow-interval", design.slideshow.interval),
   cssVar("slideshow-height", design.slideshow.height),

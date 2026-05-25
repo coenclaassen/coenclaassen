@@ -4,7 +4,7 @@ I do not expect many people to read this, but if you are here — hi👋.
 
 This is the code for my personal website:
 
-https://www.coenclaassen.com
+https://coenclaassen.com
 
 It is where I collect the things I build, think about, and care about. Product work, curiosity conversations, running adventures, and the occasional half-formed idea that somehow made it onto the internet.
 

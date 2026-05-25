@@ -1,7 +1,7 @@
 export const site = {
   name: "Coen Claassen",
-  title: "Coen Claassen | Things I build and think about",
-  description: "Things Coen Claassen has built, notes from conversations, and a little more about who he is.",
+  title: "Coen Claassen | Product work and curiosity notes",
+  description: "Physical and digital product work, Curiosity notes from conversations, and a little more about Coen Claassen.",
   url: "https://coenclaassen.com",
   locale: "en",
   ogImage: "/og/ogCoen.png",
@@ -19,12 +19,5 @@ export const site = {
     "curiosity conversations",
     "running adventures",
     "orienteering",
-  ],
-  navigation: [
-    { label: "Home", href: "/" },
-    { label: "Work", href: "/#work" },
-    { label: "About", href: "/about" },
-    { label: "Curiosity", href: "/curiosity" },
-    { label: "Contact", href: "/#contact" },
   ],
 } as const;

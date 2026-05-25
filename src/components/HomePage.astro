@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { ChevronDown } from "@lucide/astro";
 import ButtonLink from "./ButtonLink.astro";
 import CuriosityCard from "./CuriosityCard.astro";
 import Layout from "./Layout.astro";
@@ -70,7 +71,7 @@ const structuredData = [
       </div>
 
       <div class="home-notes-grid">
-        {latestNotes.map((note, index) => <CuriosityCard note={note} notes={sortedNotes} index={index} />)}
+        {latestNotes.map((note) => <CuriosityCard note={note} notes={sortedNotes} />)}
         <a class="load-more-card home-more-card hidden md:block" href="/curiosity">
           <span>See more notes.</span>
         </a>
@@ -97,6 +98,10 @@ const structuredData = [
       </div>
     </div>
   </section>
+
+  <button class="scroll-cue" type="button" aria-label="Scroll to content" data-scroll-cue>
+    <ChevronDown size={28} aria-hidden="true" />
+  </button>
 </Layout>
 
 <style>
@@ -171,6 +176,46 @@ const structuredData = [
     margin-top: 70px;
   }
 
+  .scroll-cue {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    z-index: 10;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--color-black);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(-50%);
+    transition:
+      opacity 220ms ease,
+      visibility 220ms ease;
+    visibility: hidden;
+  }
+
+  .scroll-cue.is-visible {
+    opacity: 0.35;
+    visibility: visible;
+  }
+
+  .scroll-cue:hover,
+  .scroll-cue:focus-visible {
+    opacity: 0.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue {
+      transition: none;
+    }
+  }
+
   @media (min-width: 768px) {
     .home-view--contact {
       align-items: center;
@@ -180,8 +225,10 @@ const structuredData = [
     }
 
     .home-view--notes {
-      min-height: 100svh;
-      padding: 0;
+      align-items: flex-start;
+      min-height: auto;
+      padding-top: 45svh;
+      padding-bottom: 0;
     }
 
     .home-view--work {
@@ -191,8 +238,6 @@ const structuredData = [
     }
 
     .home-copy--work {
-      min-height: 40vh;
-      align-content: center;
       max-width: none;
     }
 
@@ -202,7 +247,7 @@ const structuredData = [
 
     .home-slideshow-wrap {
       width: 100vw;
-      margin-top: 0;
+      margin-top: 15svh;
       margin-left: calc(50% - 50vw);
     }
 
@@ -236,3 +281,58 @@ const structuredData = [
     }
   }
 </style>
+
+<script>
+  (() => {
+    const cue = document.querySelector("[data-scroll-cue]");
+    const target = document.querySelector("#work");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const storageKey = "homepage-scroll-cue-dismissed";
+    const revealDelay = 4000;
+    const dismissKeys = new Set(["PageDown", "ArrowDown", " ", "Spacebar"]);
+    let dismissed = sessionStorage.getItem(storageKey) === "true" || window.scrollY > 4;
+    let revealTimer;
+
+    if (!cue || dismissed) return;
+
+    const dismissCue = () => {
+      if (dismissed) return;
+
+      dismissed = true;
+      sessionStorage.setItem(storageKey, "true");
+      window.clearTimeout(revealTimer);
+      cue.classList.remove("is-visible");
+      removeDismissListeners();
+    };
+
+    const handleKeydown = (event) => {
+      if (dismissKeys.has(event.key)) {
+        dismissCue();
+      }
+    };
+
+    const handleScrollCueClick = () => {
+      dismissCue();
+      target?.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "start" });
+    };
+
+    function removeDismissListeners() {
+      window.removeEventListener("scroll", dismissCue);
+      window.removeEventListener("wheel", dismissCue);
+      window.removeEventListener("touchstart", dismissCue);
+      window.removeEventListener("keydown", handleKeydown);
+    }
+
+    window.addEventListener("scroll", dismissCue, { passive: true });
+    window.addEventListener("wheel", dismissCue, { passive: true });
+    window.addEventListener("touchstart", dismissCue, { passive: true });
+    window.addEventListener("keydown", handleKeydown);
+    cue.addEventListener("click", handleScrollCueClick);
+
+    revealTimer = window.setTimeout(() => {
+      if (!dismissed && window.scrollY <= 4) {
+        cue.classList.add("is-visible");
+      }
+    }, revealDelay);
+  })();
+</script>

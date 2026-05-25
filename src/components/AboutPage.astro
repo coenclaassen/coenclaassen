@@ -30,7 +30,7 @@ const structuredData = [
     <section class="site-container about-intro" aria-labelledby="about-title">
       <div class="about-copy">
         <h1 id="about-title">More about me.</h1>
-        <div class="about-text">
+        <div class="about-text about-text--intro">
           <p>
             I&rsquo;m Coen. I build physical and digital products and spend too much time thinking about things that do not
             exist yet.
@@ -72,9 +72,9 @@ const structuredData = [
             terrible idea.
           </p>
           <p>
-            Running is more fun when there is a map and a bit of chaos involved. I organize
-            <a href={site.offTrailRunHref} target="_blank" rel="noreferrer">local running events</a> for people who like
-            maps, trails, and a bit of adventure.
+            Running is more fun when there is a map and a bit of chaos involved. I organize local
+            <a href={site.offTrailRunHref} target="_blank" rel="noreferrer">running events</a> for people who like maps,
+            trails, and a bit of adventure.
           </p>
           <p>
             Other days, I try not to turn everything into a project, because life is more fun when you leave some things
@@ -132,6 +132,13 @@ const structuredData = [
     line-height: var(--type-p2-mobile-line-height);
   }
 
+  .about-text--intro p {
+    font-family: var(--type-p1-family);
+    font-size: var(--type-p1-mobile-size);
+    font-weight: var(--type-p1-weight);
+    line-height: var(--type-p1-mobile-line-height);
+  }
+
   .about-text a {
     color: var(--color-black);
     text-decoration: underline;
@@ -184,6 +191,12 @@ const structuredData = [
       font-size: var(--type-p2-desktop-size);
       font-weight: var(--type-p2-desktop-weight);
       line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .about-text--intro p {
+      font-size: var(--type-p1-desktop-size);
+      font-weight: var(--type-p1-desktop-weight);
+      line-height: var(--type-p1-desktop-line-height);
     }
 
     .about-image {
