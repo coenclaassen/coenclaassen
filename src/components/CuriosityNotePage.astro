@@ -1,9 +1,9 @@
 ---
-import { ChevronLeft, ChevronRight } from "@lucide/astro";
 import { render, type CollectionEntry } from "astro:content";
+import BackButton from "./BackButton.astro";
 import ButtonLink from "./ButtonLink.astro";
 import Layout from "./Layout.astro";
-import { getCuriosityNoteNumber, getCuriosityNotePath, getCuriosityPalette, sortCuriosityNotes } from "../config/curiosity";
+import { getCuriosityNotePath, sortCuriosityNotes } from "../config/curiosity";
 import { absoluteUrl } from "../config/seo";
 import { site } from "../config/site";
 
@@ -15,28 +15,15 @@ interface Props {
 const { entry, notes } = Astro.props;
 const { Content } = await render(entry);
 const sortedNotes = sortCuriosityNotes(notes);
-const currentNoteNumber = getCuriosityNoteNumber(entry);
-const currentIndex = sortedNotes.findIndex((note) => getCuriosityNoteNumber(note) === currentNoteNumber);
-const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
-const previousNote = currentIndex > 0 ? sortedNotes[currentIndex - 1] : undefined;
-const nextNote = currentIndex >= 0 && currentIndex < sortedNotes.length - 1 ? sortedNotes[currentIndex + 1] : undefined;
-
-const getNoteControlStyle = (index: number) => {
-  const palette = getCuriosityPalette(index);
-  return `--note-control-bg: ${palette.background}; --note-control-text: ${palette.text}; --note-control-bg-hover: ${palette.hoverBackground};`;
-};
-
-const previousControlStyle = previousNote ? getNoteControlStyle(currentIndex - 1) : "";
-const currentControlStyle = getNoteControlStyle(safeCurrentIndex);
-const nextControlStyle = nextNote ? getNoteControlStyle(currentIndex + 1) : "";
 const publishedDate = entry.data.date?.toISOString();
 const modifiedDate = entry.data.dateModified?.toISOString();
-const title = `${entry.data.title} — ${entry.data.name} | Curiosity Conversations by ${site.name}`;
+const tldr = entry.data.tldr?.trim();
+const title = `${entry.data.title} | Notes from talking to people`;
 const description =
   entry.data.summary ??
   entry.data.description ??
   entry.data.subtitle ??
-  `A Curiosity Conversation with ${entry.data.name} by ${site.name}.`;
+  `A conversation note with ${entry.data.name} by ${site.name}.`;
 const canonical = getCuriosityNotePath(entry, sortedNotes);
 const canonicalUrl = absoluteUrl(canonical);
 const structuredData = [
@@ -55,30 +42,6 @@ const structuredData = [
     mainEntityOfPage: canonicalUrl,
     image: absoluteUrl(site.ogImage),
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: absoluteUrl("/"),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Curiosity Conversations",
-        item: absoluteUrl("/curiosity"),
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: entry.data.title,
-        item: canonicalUrl,
-      },
-    ],
-  },
 ];
 ---
 
@@ -92,312 +55,133 @@ const structuredData = [
   author={site.name}
   structuredData={structuredData}
 >
-  <article class="article-container section-block curiosity-article">
-      <header class="curiosity-article__header">
-        <h1 class="curiosity-article__title">{entry.data.title}</h1>
-        <p class="curiosity-article__subtitle">{entry.data.subtitle}</p>
-        <div class="curiosity-note-controls" aria-label="Curiosity note navigation">
-          {
-            previousNote && (
-              <a
-                class="curiosity-note-control curiosity-note-control--arrow"
-                href={getCuriosityNotePath(previousNote, sortedNotes)}
-                aria-label="Previous note"
-                style={previousControlStyle}
-              >
-                <ChevronLeft size={22} aria-hidden="true" />
-              </a>
-            )
-          }
-          {
-            entry.data.website ? (
-              <a
-                class="curiosity-note-control curiosity-person-pill"
-                href={entry.data.website}
-                target="_blank"
-                rel="noreferrer"
-                title={entry.data.name}
-                aria-label={entry.data.name}
-                style={currentControlStyle}
-              >
-                <span class="curiosity-person-pill__text">{entry.data.name}</span>
-              </a>
-            ) : (
-              <span
-                class="curiosity-note-control curiosity-person-pill"
-                title={entry.data.name}
-                aria-label={entry.data.name}
-                style={currentControlStyle}
-              >
-                <span class="curiosity-person-pill__text">{entry.data.name}</span>
-              </span>
-            )
-          }
-          {
-            nextNote && (
-              <a
-                class="curiosity-note-control curiosity-note-control--arrow"
-                href={getCuriosityNotePath(nextNote, sortedNotes)}
-                aria-label="Next note"
-                style={nextControlStyle}
-              >
-                <ChevronRight size={22} aria-hidden="true" />
-              </a>
-            )
-          }
-        </div>
-      </header>
-      <div class="article-content curiosity-article-content">
-        <Content />
-      </div>
-      <section class="curiosity-article-cta">
-        <h4>Continue the thread.</h4>
-        <p>Send a question, reaction, or someone worth talking to.<br />Or keep reading and follow another note.</p>
-        <div class="curiosity-article-cta__buttons">
-          <ButtonLink href={site.emailHref}>Email me</ButtonLink>
-          <ButtonLink href="/curiosity" variant="secondary">See more notes</ButtonLink>
-        </div>
-      </section>
+  <article class="article-container curiosity-note">
+    <BackButton href="/curiosity" label="All notes" />
+
+    <p class="note-intro type-p1">
+      I had coffee with {
+        entry.data.website ? (
+          <a href={entry.data.website} target="_blank" rel="noreferrer">{entry.data.name}</a>
+        ) : (
+          <span>{entry.data.name}</span>
+        )
+      }.<br />
+      Notes below.
+    </p>
+
+    <header class="note-header">
+      <h1 class="type-h2">{entry.data.title}</h1>
+      <p class="type-p1">{entry.data.subtitle}</p>
+    </header>
+
+    {
+      tldr && (
+        <section class="note-tldr" aria-label="TLDR">
+          <h2 class="type-n1">TLDR</h2>
+          <p class="type-n0">{tldr}</p>
+        </section>
+      )
+    }
+
+    <div class="article-content note-content">
+      <Content />
+    </div>
   </article>
+
+  <section class="article-container article-cta" aria-label="More">
+    <h2 class="type-cta">
+      See what else I build.<br />
+      Or read more notes.
+    </h2>
+    <p class="article-cta__text type-p1">Got a thought, a question, or someone worth meeting?</p>
+    <div class="article-cta__buttons">
+      <ButtonLink href="/#work">See what else I build</ButtonLink>
+      <ButtonLink href="/curiosity" variant="secondary">See more notes</ButtonLink>
+    </div>
+  </section>
 </Layout>
 
 <style>
-  .curiosity-article {
-    display: flex;
-    width: calc(100% - 60px);
-    max-width: 620px;
-    min-width: 0;
-    flex-direction: column;
-    gap: 32px;
-    padding-right: 0;
-    padding-left: 0;
+  .curiosity-note {
+    padding-top: var(--top-button-offset);
   }
 
-  .curiosity-article__header {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
+  .note-intro {
+    margin-top: var(--note-intro-gap);
   }
 
-  .curiosity-article__title {
-    font-family: var(--type-h2-family);
-    font-size: var(--type-h2-mobile-size);
-    font-weight: var(--type-h2-weight);
-    line-height: var(--type-h2-mobile-line-height);
-  }
-
-  .curiosity-article__subtitle {
-    font-family: var(--font-body);
-    font-size: var(--type-h4-mobile-size);
+  .note-intro a {
+    color: var(--color-black);
     font-weight: 400;
-    line-height: var(--type-h4-mobile-line-height);
+    text-decoration: underline;
   }
 
-  .curiosity-note-controls {
-    display: flex;
-    width: auto;
-    max-width: 100%;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 12px;
-    margin-top: 8px;
+  .note-header {
+    display: grid;
+    gap: 20px;
+    margin-top: var(--note-title-gap);
   }
 
-  .curiosity-note-control {
-    display: inline-flex;
-    height: var(--button-height);
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--button-radius);
-    background: var(--note-control-bg);
-    color: var(--note-control-text);
-    font-weight: 700;
-    text-decoration: none;
-    transition:
-      background 200ms ease,
-      color 200ms ease;
-  }
-
-  .curiosity-note-control--arrow {
-    width: var(--button-height);
-    flex: 0 0 auto;
-  }
-
-  .curiosity-person-pill {
-    min-width: 0;
-    width: auto;
-    max-width: calc(100vw - 160px);
-    flex: 0 1 auto;
-    overflow: hidden;
-    justify-content: flex-start;
-    padding: 0 22px;
-    text-align: left;
-    direction: ltr;
-    unicode-bidi: isolate;
-  }
-
-  .curiosity-person-pill__text {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    flex: 1 1 auto;
-    overflow: hidden;
-    text-align: left;
-    text-overflow: ellipsis;
-    direction: ltr;
-    unicode-bidi: isolate;
-    white-space: nowrap;
-  }
-
-  a.curiosity-note-control:hover,
-  a.curiosity-note-control:focus-visible {
-    background: var(--note-control-bg-hover);
-    color: var(--color-white);
-  }
-
-  .curiosity-article-cta {
-    display: flex;
-    width: 100%;
-    max-width: 580px;
-    margin-right: auto;
-    margin-left: 0;
-    min-width: 0;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 72px;
-    margin-bottom: 72px;
-    padding: 32px 24px;
-    border-radius: var(--corner-radius);
-    background: var(--color-light-grey);
-    text-align: left;
-  }
-
-  .curiosity-article-cta p {
+  .note-tldr {
+    display: grid;
+    gap: 10px;
     margin-top: 20px;
   }
 
-  .curiosity-article-cta__buttons {
-    display: flex;
+  .note-content {
+    margin-top: var(--article-heading-gap-mobile);
+  }
+
+  .article-cta {
+    display: grid;
+    gap: 20px;
+    margin-top: 140px;
+    padding-bottom: 120px;
+  }
+
+  .article-cta__text {
+    display: none;
+  }
+
+  .article-cta__buttons {
+    display: grid;
+    gap: 15px;
+    margin-top: 70px;
+  }
+
+  .article-cta__buttons :global(.button-link) {
     width: 100%;
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-    justify-content: flex-start;
-    margin-top: 32px;
-  }
-
-  .curiosity-article-cta__buttons :global(.button-link) {
-    width: 100%;
-  }
-
-  .curiosity-article-cta__buttons :global(.button-link:nth-child(2)) {
-    background: var(--color-light-grey-on-light-grey);
-    color: var(--color-black);
-  }
-
-  .curiosity-article-cta__buttons :global(.button-link:nth-child(2):hover),
-  .curiosity-article-cta__buttons :global(.button-link:nth-child(2):focus-visible) {
-    background: var(--button-bg-hover);
-    color: var(--button-text-hover);
-  }
-
-  :global(.curiosity-article-content) {
-    width: 100%;
-    max-width: 580px;
-    margin-right: auto;
-    margin-left: 0;
-    gap: 12px;
-  }
-
-  :global(.curiosity-article-content :is(h2, h3, h4, h5, h6)) {
-    margin-top: 60px;
-  }
-
-  :global(.curiosity-article-content :is(h2, h3, h4, h5, h6) + :is(h2, h3, h4, h5, h6)) {
-    margin-top: 0;
-  }
-
-  :global(.curiosity-article-content h2) {
-    font-family: var(--type-h3-family);
-    font-size: var(--type-h3-mobile-size);
-    font-weight: var(--type-h3-weight);
-    line-height: var(--type-h3-mobile-line-height);
-  }
-
-  :global(.curiosity-article-content h3) {
-    font-family: var(--type-h6-family);
-    font-size: var(--type-h6-mobile-size);
-    font-weight: var(--type-h6-weight);
-    line-height: var(--type-h6-mobile-line-height);
-  }
-
-  :global(.curiosity-article-content ul) {
-    list-style-type: disc;
-  }
-
-  :global(.curiosity-article-content ul ul) {
-    list-style-type: circle;
-  }
-
-  :global(.curiosity-article-content ul),
-  :global(.curiosity-article-content ol) {
-    padding-left: 1.5rem;
-  }
-
-  :global(.curiosity-article-content li) {
-    padding-left: 0.125rem;
-  }
-
-  :global(.curiosity-article-content li + li) {
-    margin-top: 0.5rem;
   }
 
   @media (min-width: 768px) {
-    .curiosity-article {
-      width: calc(100% - 110px);
+    .curiosity-note {
+      padding-top: var(--top-button-offset);
     }
 
-    .curiosity-person-pill {
-      max-width: 100%;
+    .note-header {
+      margin-top: var(--note-title-gap);
     }
 
-    .curiosity-article-cta {
-      margin-top: 100px;
-      margin-bottom: 100px;
-      padding: 44px 48px;
+    .note-content {
+      margin-top: var(--article-heading-gap-desktop);
     }
 
-    .curiosity-article-cta__buttons {
+    .article-cta {
+      margin-top: 160px;
+      padding-bottom: 150px;
+    }
+
+    .article-cta__text {
+      display: block;
+    }
+
+    .article-cta__buttons {
+      display: flex;
+      margin-top: 50px;
+    }
+
+    .article-cta__buttons :global(.button-link) {
       width: auto;
-      flex-direction: row;
-      align-items: flex-start;
-    }
-
-    .curiosity-article-cta__buttons :global(.button-link) {
-      width: auto;
-    }
-
-    .curiosity-article__title {
-      font-size: var(--type-h2-desktop-size);
-      line-height: var(--type-h2-desktop-line-height);
-    }
-
-    .curiosity-article__subtitle {
-      font-size: var(--type-h4-desktop-size);
-      line-height: var(--type-h4-desktop-line-height);
-    }
-
-    :global(.curiosity-article-content h2) {
-      font-size: var(--type-h3-desktop-size);
-      line-height: var(--type-h3-desktop-line-height);
-    }
-
-    :global(.curiosity-article-content h3) {
-      font-size: var(--type-h6-desktop-size);
-      line-height: var(--type-h6-desktop-line-height);
     }
   }
 </style>

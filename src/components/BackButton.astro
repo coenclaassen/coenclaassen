@@ -1,0 +1,60 @@
+---
+import { ChevronLeft } from "@lucide/astro";
+
+interface Props {
+  href: string;
+  label?: string;
+  ariaLabel?: string;
+}
+
+const { href, label, ariaLabel } = Astro.props;
+const accessibleLabel = ariaLabel ?? label ?? "Back";
+---
+
+<a class:list={["back-text-button", !label && "back-text-button--icon"]} href={href} aria-label={accessibleLabel}>
+  <ChevronLeft size={15} aria-hidden="true" />
+  {label && <span>{label}</span>}
+</a>
+
+<style>
+  .back-text-button {
+    display: inline-flex;
+    min-height: var(--button-height);
+    align-items: center;
+    gap: 6px;
+    padding: 0 18px;
+    border: var(--stroke-weight) solid var(--color-stroke);
+    border-radius: var(--button-radius);
+    background: var(--color-white);
+    box-shadow: var(--shadow);
+    color: var(--color-black);
+    font-family: var(--type-p3-family);
+    font-size: var(--type-p3-mobile-size);
+    font-weight: var(--type-p3-weight);
+    line-height: var(--type-p3-mobile-line-height);
+    text-decoration: none;
+    transition:
+      transform var(--motion-transition),
+    opacity var(--motion-transition);
+  }
+
+  .back-text-button--icon {
+    width: var(--button-height);
+    justify-content: center;
+    padding: 0;
+  }
+
+  .back-text-button:hover,
+  .back-text-button:focus-visible {
+    opacity: 0.9;
+    transform: translateY(var(--motion-hover-y));
+  }
+
+  @media (min-width: 768px) {
+    .back-text-button {
+      font-size: var(--type-p3-desktop-size);
+      font-weight: var(--type-p3-desktop-weight);
+      line-height: var(--type-p3-desktop-line-height);
+    }
+  }
+</style>

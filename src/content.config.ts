@@ -13,6 +13,7 @@ const curiosity = defineCollection({
     name: z.string(),
     title: z.string(),
     subtitle: z.string(),
+    tldr: z.string().optional(),
     summary: z.string().optional(),
     description: z.string().optional(),
     date: z.coerce.date().optional(),

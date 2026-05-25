@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import ButtonLink from "./ButtonLink.astro";
 import CuriosityCard from "./CuriosityCard.astro";
-import Footer from "./Footer.astro";
 import Layout from "./Layout.astro";
 import Slideshow from "./Slideshow.astro";
 import { sortCuriosityNotes } from "../config/curiosity";
@@ -11,7 +10,7 @@ import { site } from "../config/site";
 
 const notes = await getCollection("curiosity");
 const sortedNotes = sortCuriosityNotes(notes);
-const latestNotes = sortedNotes.slice(0, 3);
+const latestNotes = sortedNotes.slice(0, 2);
 const title = site.title;
 const description = site.description;
 const canonical = "/";
@@ -27,186 +26,213 @@ const structuredData = [
 ];
 ---
 
-<Layout title={title} description={description} canonical={canonical} structuredData={structuredData} showFooter={false}>
-  <section class="section-block">
-    <div class="site-container home-columns">
-      <div class="home-left-column home-hero">
-        <h1>Good things rarely start clear.</h1>
-        <h4>Here you'll find things I build, think about, and care about.</h4>
-        <p class="home-section-body">Send me a message, or see the stuff that keeps me busy.</p>
-        <div class="home-hero-buttons flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href={site.emailHref}>Email me</ButtonLink>
-          <ButtonLink href="/#work" variant="secondary">See more</ButtonLink>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="work" class="work-section">
-    <div class="site-container py-[60px] pb-[40px] md:pt-[90px] md:pb-[70px]">
-      <div class="home-columns">
-        <div class="home-copy-block">
-          <h2>Products start <br class="hidden md:block" />as chaos.</h2>
-          <h4>My work is finding direction before the chaos turns into cost.</h4>
-        </div>
-
-        <div class="home-work-body home-section-body">
-          <h4>
-            Ambiguity <br class="hidden md:block" />
-            <span class="home-work-callout-line">to momentum.</span>
-          </h4>
-          <p>I shape and visualize the future, then use it to rally the team to build it with me. When things seem impossible, I find an alternative path.</p>
-          <p>These are some products I’ve built.</p>
-        </div>
-      </div>
-    </div>
-    <Slideshow />
-  </section>
-
-  <section class="bg-white py-[60px] md:py-[100px]">
+<Layout title={title} description={description} canonical={canonical} structuredData={structuredData}>
+  <section class="home-view home-view--hero">
     <div class="site-container">
-      <div class="home-columns">
-        <h2>Better ideas <br class="hidden md:block" />begin with better <br class="hidden md:block" />conversations.</h2>
-
-        <div class="home-copy-block">
-          <h4>Things you only learn by talking to real people.</h4>
-          <p class="home-section-body">I follow my curiosity, talk with people, and learn how better questions can change the way we think.</p>
-          <p class="home-section-body">This is what those curiosity conversations reveal.</p>
-        </div>
-      </div>
-
-      <div class="mt-[30px] grid gap-[30px] md:mt-[50px]">
-        <div class="grid gap-5 md:grid-cols-3">
-          {latestNotes.map((note, index) => <CuriosityCard note={note} notes={sortedNotes} index={index} />)}
-        </div>
-
-        <div class="[&_.button-link]:w-full md:flex md:justify-center md:[&_.button-link]:w-auto">
-          <ButtonLink href="/curiosity" variant="secondary">See more notes</ButtonLink>
-        </div>
+      <div class="home-copy">
+        <h1>
+          Somehow,<br />
+          you ended up here.
+        </h1>
+        <p class="type-p1">This is where you&rsquo;ll find stuff I&rsquo;ve built and things I think about.</p>
       </div>
     </div>
   </section>
 
-  <section id="contact" class="home-contact-panel flex flex-col bg-[var(--color-black)] text-white">
-    <div class="home-contact-stage">
-      <div class="home-contact-content w-full py-[60px]">
-        <div class="site-container home-columns">
-          <div class="home-left-column home-copy-block home-contact-cta">
-            <h2>Adventures do not start themselves.</h2>
-            <h4>Share an idea, <br class="hidden md:block" />a thought, or just say hi.</h4>
-            <p class="home-section-body">Great things can only happen when someone makes the first move.</p>
-            <div class="contact-buttons flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href={site.emailHref}>Email me</ButtonLink>
-              <ButtonLink href={site.linkedinHref} variant="secondary">Connect on LinkedIn</ButtonLink>
-            </div>
-          </div>
+  <section id="work" class="home-view home-view--work">
+    <div class="site-container">
+      <div class="home-copy home-copy--work">
+        <h2>
+          <span>Products</span>
+          <span class="md:inline">I&rsquo;ve helped build</span>
+        </h2>
+        <p class="type-p2">
+          My job is finding direction before the chaos turns into cost.<br class="hidden md:block" />
+          I turn half-ideas and &ldquo;this will never work&rdquo; into things teams can actually build and ship.
+        </p>
+      </div>
+
+      <div class="home-slideshow-wrap">
+        <Slideshow />
+      </div>
+    </div>
+  </section>
+
+  <section class="home-view home-view--notes">
+    <div class="site-container">
+      <div class="home-copy home-copy--notes">
+        <h3>Notes from talking to people</h3>
+        <p class="type-p2">
+          Everyone has something interesting going on.
+          You just have to ask the right questions.<br class="hidden md:block" />
+          These are a few conversations I keep thinking about.
+        </p>
+      </div>
+
+      <div class="home-notes-grid">
+        {latestNotes.map((note, index) => <CuriosityCard note={note} notes={sortedNotes} index={index} />)}
+        <a class="load-more-card home-more-card hidden md:block" href="/curiosity">
+          <span>See more notes.</span>
+        </a>
+      </div>
+
+      <div class="home-notes-button md:hidden">
+        <ButtonLink href="/curiosity" variant="secondary">See more notes</ButtonLink>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="home-view home-view--contact">
+    <div class="site-container">
+      <div class="home-copy home-copy--contact">
+        <h2 class="type-cta">Still here?</h2>
+        <p class="type-p1">
+          If you made it this far,<br class="md:hidden" />
+          we probably get along.
+        </p>
+        <div class="home-buttons">
+          <ButtonLink href={site.emailHref}>Email me</ButtonLink>
+          <ButtonLink href="/about" variant="secondary">More about me</ButtonLink>
         </div>
       </div>
     </div>
-    <Footer variant="dark" />
   </section>
 </Layout>
 
 <style>
-  .home-columns {
-    display: grid;
-    gap: 24px;
-  }
-
-  .home-hero {
-    display: grid;
-    gap: 20px;
-  }
-
-  .home-copy-block {
-    display: grid;
-    gap: 20px;
-  }
-
-  .home-hero-buttons {
-    margin-top: 8px;
-  }
-
-  .contact-buttons {
-    margin-top: 8px;
-  }
-
-  .home-contact-panel {
-    --home-footer-height: 82px;
-    --footer-height: var(--home-footer-height);
-
+  .home-view {
     display: flex;
-    flex-direction: column;
-    background: var(--color-black);
-    color: var(--color-white);
+    align-items: center;
+    background: var(--color-white);
   }
 
-  .home-contact-stage {
-    min-height: calc(100svh - var(--header-height) - var(--footer-height));
-    padding-bottom: 80px;
+  .home-view--hero {
+    min-height: 100svh;
   }
 
-  .home-contact-content {
+  .home-view--work {
+    min-height: auto;
+    padding: 80px 0;
+  }
+
+  .home-view--notes {
+    min-height: auto;
+    padding: 80px 0;
+  }
+
+  .home-view--contact {
+    align-items: flex-start;
+    min-height: auto;
+    padding-top: var(--layout-spacer);
+    padding-bottom: 70px;
+  }
+
+  .home-copy {
+    display: grid;
+    max-width: 560px;
+    gap: 20px;
+  }
+
+  .home-copy--work h2 span {
+    display: block;
+  }
+
+  .home-slideshow-wrap {
+    margin-top: 50px;
+  }
+
+  .home-notes-grid {
+    display: grid;
+    gap: 15px;
+    margin-top: 50px;
+  }
+
+  .home-more-card {
+    display: none;
+    color: var(--color-black);
+    font-family: var(--type-p2-family);
+    font-size: var(--type-p2-mobile-size);
+    font-weight: var(--type-p2-weight);
+    line-height: var(--type-p2-mobile-line-height);
+  }
+
+  .home-notes-button {
+    margin-top: 50px;
+  }
+
+  .home-notes-button :global(.button-link),
+  .home-buttons :global(.button-link) {
     width: 100%;
   }
 
-  .home-contact-cta {
-    margin-top: clamp(96px, 18vh, 220px);
-  }
-
-  @media (max-width: 767px) {
-    .home-contact-cta {
-      margin-top: clamp(72px, 14vh, 140px);
-    }
-  }
-
-  .home-section-body,
-  .home-section-body p {
-    font-family: var(--font-body);
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 150%;
-  }
-
-  .home-work-body {
+  .home-buttons {
     display: grid;
-    gap: 20px;
-  }
-
-  .home-work-callout-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    gap: 15px;
+    margin-top: 70px;
   }
 
   @media (min-width: 768px) {
-    .home-contact-panel {
-      --home-footer-height: 83px;
-    }
-
-    .home-contact-content {
+    .home-view--contact {
+      align-items: center;
+      min-height: 100svh;
       padding-top: 0;
+      padding-bottom: 0;
     }
 
-    .home-columns {
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      column-gap: 80px;
-      align-items: start;
+    .home-view--notes {
+      min-height: 100svh;
+      padding: 0;
     }
 
-    .home-left-column {
-      grid-column: 1;
+    .home-view--work {
+      display: block;
+      min-height: auto;
+      padding: 0;
     }
 
-    .home-section-body,
-    .home-section-body p {
-      font-size: 18px;
-      line-height: 155%;
+    .home-copy--work {
+      min-height: 40vh;
+      align-content: center;
+      max-width: none;
     }
 
-    .home-work-body {
-      align-self: end;
+    .home-copy--work h2 span {
+      display: inline;
     }
 
+    .home-slideshow-wrap {
+      width: 100vw;
+      margin-top: 0;
+      margin-left: calc(50% - 50vw);
+    }
+
+    .home-copy--notes {
+      max-width: none;
+    }
+
+    .home-notes-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 50px;
+    }
+
+    .home-more-card {
+      display: block;
+      font-size: var(--type-p2-desktop-size);
+      font-weight: var(--type-p2-desktop-weight);
+      line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .home-buttons {
+      display: flex;
+      margin-top: 0;
+    }
+
+    .home-buttons :global(.button-link) {
+      width: auto;
+    }
+
+    .home-copy--contact {
+      gap: 20px;
+    }
   }
 </style>

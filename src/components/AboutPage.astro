@@ -1,12 +1,13 @@
 ---
+import BackButton from "./BackButton.astro";
 import ButtonLink from "./ButtonLink.astro";
 import Layout from "./Layout.astro";
 import { absoluteUrl, personJsonLd } from "../config/seo";
 import { site } from "../config/site";
 
-const title = "About Coen Claassen — Product Development, Leadership & Running";
+const title = "More about me | Coen Claassen";
 const description =
-  "Learn more about Coen Claassen, his work across product development, engineering, product leadership, Curiosity Conversations, and running/orienteering adventures.";
+  "More about Coen Claassen, building physical and digital products, writing notes from conversations, and spending time outside.";
 const canonical = "/about";
 const structuredData = [
   {
@@ -21,105 +22,185 @@ const structuredData = [
 ---
 
 <Layout title={title} description={description} canonical={canonical} structuredData={structuredData}>
-  <section class="section-block bg-white">
-    <div class="site-container about-two-column about-two-column--center">
-      <div class="text-block about-intro__copy">
-        <h2>Hey, I'm Coen.</h2>
-        <div>
-          <p>I build physical and digital products, write notes from conversations, and spend a lot of time running.</p>
-          <p>Most of what I care about has something to do with making things, understanding people, or finding a path when the route is not obvious yet.</p>
-          <p>My brain turns most things into product or business ideas. Useful at work... slightly less useful when someone just wants to enjoy dinner 😅</p>
-        </div>
-      </div>
-
-      <div class="about-portrait">
-        <img src="/images/about/coen.webp" alt="Coen Claassen" />
-      </div>
+  <div class="about-page">
+    <div class="site-container">
+      <BackButton href="/" ariaLabel="Back home" />
     </div>
-  </section>
 
-  <section class="section-block bg-[var(--color-light-grey)]">
-    <div class="site-container about-two-column about-two-column--start">
-      <div class="text-block flex flex-col gap-5">
-        <h4>Most days</h4>
-        <div>
-          <p>I work on physical and digital products that need to make sense in real life. I navigate the early stages of ideas, where design decisions quietly lock in years of consequence.</p>
-          <p>My background moves through product design, engineering, and product leadership. You'll find the full timeline on <a class="about-inline-link" href={site.linkedinHref} target="_blank" rel="noreferrer">LinkedIn</a>.</p>
-        </div>
-      </div>
-
-      <div class="text-block flex flex-col gap-5">
-        <h4>When I'm not working</h4>
-        <div>
-          <p>I write notes from conversations with people, mostly because I want to ask better questions and understand how others see the world.</p>
+    <section class="site-container about-intro" aria-labelledby="about-title">
+      <div class="about-copy">
+        <h1 id="about-title">More about me.</h1>
+        <div class="about-text">
           <p>
-            I like running. Often in the forest, sometimes with a map, navigating from point to point through rough terrain.
-            {/* For people who like maps, trails, and a bit of chaos, I also organize small <a class="about-inline-link" href={site.offTrailRunHref} target="_blank" rel="noreferrer">running adventures</a>. */}
+            I&rsquo;m Coen. I build physical and digital products and spend too much time thinking about things that do not
+            exist yet.
+          </p>
+          <p>
+            I also write notes from conversations, mostly because asking better questions changes how I see people,
+            products, and the world around me.
+          </p>
+          <p>
+            My brain turns almost anything into product or business ideas. Useful at work. Less useful at dinner.
           </p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section class="section-block bg-white">
-    <div class="site-container">
-      <div class="text-block grid gap-5">
-        <h4>Say hi</h4>
-        <div>
-          <p>Want to grab coffee, go for a run, or send something interesting?</p>
-        </div>
-        <div class="flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href={site.emailHref}>Email me</ButtonLink>
-          <ButtonLink href={site.linkedinHref} variant="secondary">Connect on LinkedIn</ButtonLink>
+      <img class="about-image" src="/images/about/coen.webp" alt="Coen Claassen" />
+    </section>
+
+    <section class="site-container about-columns" aria-label="More about Coen">
+      <div class="about-copy">
+        <h2>Most days</h2>
+        <div class="about-text">
+          <p>I work on products before they make sense to everyone else.</p>
+          <p>
+            That usually means turning vague ideas, doubts, sketches, and opinions into something people can actually
+            build.
+          </p>
+          <p>I work in different places, but most days you&rsquo;ll find me at Philips in Eindhoven.</p>
+          <p>
+            LinkedIn has my <a href={site.linkedinHref} target="_blank" rel="noreferrer">full timeline</a>.
+          </p>
         </div>
       </div>
-    </div>
-  </section>
+
+      <div class="about-copy">
+        <h2>When I&rsquo;m not working</h2>
+        <div class="about-text">
+          <p>
+            I talk to people, write down what stayed with me, and run around outside because sitting still all day is a
+            terrible idea.
+          </p>
+          <p>
+            Running is more fun when there is a map and a bit of chaos involved. I organize
+            <a href={site.offTrailRunHref} target="_blank" rel="noreferrer">local running events</a> for people who like
+            maps, trails, and a bit of adventure.
+          </p>
+          <p>
+            Other days, I try not to turn everything into a project, because life is more fun when you leave some things
+            a little unoptimized.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-container about-cta" aria-labelledby="about-cta-title">
+      <h2 id="about-cta-title" class="type-cta">Now what?</h2>
+      <p class="type-p1">Wanna go for a run, grab a coffee, or discuss an interesting idea?</p>
+      <div class="about-buttons">
+        <ButtonLink href={site.emailHref}>Email me</ButtonLink>
+        <ButtonLink href={site.linkedinHref} variant="secondary">Connect on LinkedIn</ButtonLink>
+      </div>
+    </section>
+  </div>
 </Layout>
 
 <style>
-  .about-two-column {
-    display: grid;
-    gap: 40px;
+  .about-page {
+    padding: var(--top-button-offset) 0 70px;
   }
 
-  .about-intro__copy {
+  .about-intro {
+    margin-top: var(--top-content-offset);
+  }
+
+  .about-intro,
+  .about-columns {
+    display: grid;
+    gap: 60px;
+  }
+
+  .about-columns {
+    margin-top: var(--section-gap-mobile);
+  }
+
+  .about-copy {
     display: grid;
     gap: 20px;
   }
 
-  .about-portrait img {
-    width: 100%;
-    border-radius: var(--corner-radius);
+  .about-text {
+    display: grid;
+    gap: 14px;
   }
 
-  .about-portrait img {
-    height: auto;
+  .about-text p {
+    color: var(--color-grey);
+    font-family: var(--type-p2-family);
+    font-size: var(--type-p2-mobile-size);
+    font-weight: var(--type-p2-weight);
+    line-height: var(--type-p2-mobile-line-height);
   }
 
-  .about-inline-link {
-    color: var(--link-blue);
+  .about-text a {
+    color: var(--color-black);
     text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
-  .about-inline-link:hover,
-  .about-inline-link:focus-visible {
-    color: var(--link-blue-hover);
+  .about-image {
+    width: 100%;
+    border-radius: var(--card-radius);
+    box-shadow: var(--soft-shadow);
+  }
+
+  .about-cta {
+    display: grid;
+    gap: 20px;
+    margin-top: var(--layout-spacer);
+  }
+
+  .about-buttons {
+    display: grid;
+    gap: 15px;
+    margin-top: 50px;
+  }
+
+  .about-buttons :global(.button-link) {
+    width: 100%;
   }
 
   @media (min-width: 768px) {
-    .about-two-column {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 80px;
+    .about-page {
+      padding: var(--top-button-offset) 0 var(--layout-spacer);
     }
 
-    .about-two-column--center {
+    .about-intro {
+      margin-top: 80px;
+    }
+
+    .about-intro,
+    .about-columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 60px;
       align-items: center;
     }
 
-    .about-two-column--start {
+    .about-columns {
       align-items: start;
+      margin-top: var(--section-gap-desktop);
+    }
+
+    .about-text p {
+      font-size: var(--type-p2-desktop-size);
+      font-weight: var(--type-p2-desktop-weight);
+      line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .about-image {
+      justify-self: end;
+    }
+
+    .about-cta {
+      margin-top: 300px;
+    }
+
+    .about-buttons {
+      display: flex;
+      margin-top: 0;
+    }
+
+    .about-buttons :global(.button-link) {
+      width: auto;
     }
   }
 </style>

@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getCuriosityNotePath, getCuriosityPalette } from "../config/curiosity";
+import { getCuriosityNotePath } from "../config/curiosity";
 
 interface Props {
   note: CollectionEntry<"curiosity">;
@@ -8,18 +8,49 @@ interface Props {
   index?: number;
 }
 
-const { note, notes, index = 0 } = Astro.props;
-const palette = getCuriosityPalette(index);
+const { note, notes } = Astro.props;
 ---
 
-<a
-  class="curiosity-card block h-full min-h-[220px] rounded-[var(--corner-radius)] p-6 no-underline"
-  href={getCuriosityNotePath(note, notes)}
-  style={`--card-bg: ${palette.background}; --card-text: ${palette.text}; --card-bg-hover: ${palette.hoverBackground};`}
-  aria-label={`Read notes: ${note.data.title}`}
->
-  <article class="grid gap-4">
-    <h3>{note.data.title}</h3>
-    <p>{note.data.subtitle}</p>
+<a class="curiosity-card" href={getCuriosityNotePath(note, notes)} aria-label={`Read notes: ${note.data.title}`}>
+  <article class="curiosity-card__content">
+    <p class="curiosity-card__title">{note.data.title}</p>
+    <p class="curiosity-card__meta">With {note.data.name}</p>
   </article>
 </a>
+
+<style>
+  .curiosity-card__content {
+    display: grid;
+    gap: 2px;
+  }
+
+  .curiosity-card__title {
+    color: var(--color-black);
+    font-family: var(--type-p2-family);
+    font-size: var(--type-p2-mobile-size);
+    font-weight: var(--type-p2-weight);
+    line-height: var(--type-p2-mobile-line-height);
+  }
+
+  .curiosity-card__meta {
+    color: var(--color-grey);
+    font-family: var(--type-p3-family);
+    font-size: var(--type-p3-mobile-size);
+    font-weight: var(--type-p3-weight);
+    line-height: var(--type-p3-mobile-line-height);
+  }
+
+  @media (min-width: 768px) {
+    .curiosity-card__title {
+      font-size: var(--type-p2-desktop-size);
+      font-weight: var(--type-p2-desktop-weight);
+      line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .curiosity-card__meta {
+      font-size: var(--type-p3-desktop-size);
+      font-weight: var(--type-p3-desktop-weight);
+      line-height: var(--type-p3-desktop-line-height);
+    }
+  }
+</style>

@@ -1,6 +1,4 @@
 ---
-import { design } from "../config/design";
-
 interface Props {
   href: string;
   label?: string;
@@ -8,29 +6,66 @@ interface Props {
 }
 
 const { href, label, variant = "primary" } = Astro.props;
-const buttonStyle = design.colors.buttons[variant];
 const isExternal = href.startsWith("http");
 ---
 
 <a
-  class="button-link inline-flex h-[var(--button-height)] items-center justify-center gap-3 rounded-[var(--button-radius)] px-7 text-center font-bold no-underline transition-colors duration-200"
+  class:list={["button-link", variant === "secondary" && "button-link--secondary"]}
   href={href}
   target={isExternal ? "_blank" : undefined}
   rel={isExternal ? "noreferrer" : undefined}
-  style={`--button-bg: ${buttonStyle.background}; --button-text: ${buttonStyle.text}; --button-bg-hover: ${buttonStyle.hoverBackground}; --button-text-hover: ${buttonStyle.hoverText};`}
 >
   <slot>{label}</slot>
 </a>
 
 <style>
   .button-link {
-    background: var(--button-bg);
-    color: var(--button-text);
+    display: inline-flex;
+    width: fit-content;
+    min-height: var(--button-height);
+    align-items: center;
+    justify-content: center;
+    border: var(--stroke-weight) solid var(--color-black);
+    border-radius: var(--button-radius);
+    background: var(--color-black);
+    box-shadow: var(--soft-shadow);
+    color: var(--color-white);
+    font-family: var(--type-btn-family);
+    font-size: var(--type-btn-mobile-size);
+    font-weight: var(--type-btn-weight);
+    line-height: var(--type-btn-mobile-line-height);
+    padding: 0 34px;
+    text-align: center;
+    text-decoration: none;
+    transition:
+      transform var(--motion-transition),
+      opacity var(--motion-transition),
+      border-color var(--motion-transition);
+  }
+
+  .button-link--secondary {
+    border-color: var(--color-stroke);
+    background: var(--color-white);
+    color: var(--color-black);
   }
 
   .button-link:hover,
   .button-link:focus-visible {
-    background: var(--button-bg-hover);
-    color: var(--button-text-hover);
+    color: var(--color-white);
+    opacity: 0.9;
+    transform: translateY(var(--motion-hover-y));
+  }
+
+  .button-link--secondary:hover,
+  .button-link--secondary:focus-visible {
+    color: var(--color-black);
+  }
+
+  @media (min-width: 768px) {
+    .button-link {
+      font-size: var(--type-btn-desktop-size);
+      font-weight: var(--type-btn-desktop-weight);
+      line-height: var(--type-btn-desktop-line-height);
+    }
   }
 </style>

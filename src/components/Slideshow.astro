@@ -1,7 +1,7 @@
 ---
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { ChevronLeft, ChevronRight, Maximize } from "@lucide/astro";
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "@lucide/astro";
 
 interface Props {
   label?: string;
@@ -16,39 +16,121 @@ const slides = readdirSync(slidesDirectory)
   .map((filename) => `/images/slides/${filename}`);
 ---
 
-<section
-  id="work-slideshow"
-  class="work-slideshow relative h-[80vh] min-h-[260px] w-full overflow-hidden bg-[var(--color-black)]"
-  aria-label={label}
-  data-slideshow
->
-  <div class="absolute inset-0 size-full max-w-none">
-    {slides.map((src, index) => (
-      <img
-        class:list={[
-          "absolute inset-0 h-full w-full max-w-none object-cover opacity-0 transition-opacity duration-700",
-          index === 0 && "opacity-100",
-        ]}
-        src={src}
-        alt={`Selected work slide ${index + 1}`}
-        loading={index === 0 ? "eager" : "lazy"}
-        data-slide
-      />
-    ))}
+<section class="work-slideshow" aria-label={label} data-slideshow>
+  <div class="work-slideshow__stage">
+    {
+      slides.map((src, index) => (
+        <img
+          class:list={["work-slideshow__image", index === 0 && "is-active"]}
+          src={src}
+          alt={`Selected work slide ${index + 1}`}
+          loading={index === 0 ? "eager" : "lazy"}
+          data-slide
+        />
+      ))
+    }
   </div>
 
-  <div class="absolute bottom-4 right-4 z-10 flex gap-2">
-    <button class="inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-[var(--color-black)] shadow-sm transition-colors hover:bg-white" type="button" aria-label="Previous slide" data-slide-prev>
-      <ChevronLeft size={22} aria-hidden="true" />
+  <div class="work-slideshow__controls" data-slideshow-controls>
+    <button type="button" aria-label="Previous slide" data-slide-prev>
+      <ChevronLeft size={18} aria-hidden="true" />
     </button>
-    <button class="inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-[var(--color-black)] shadow-sm transition-colors hover:bg-white" type="button" aria-label="View slideshow fullscreen" data-slide-fullscreen>
-      <Maximize size={21} aria-hidden="true" />
+    <button type="button" aria-label="View slideshow fullscreen" data-slide-fullscreen>
+      <span data-fullscreen-open><Maximize2 size={17} aria-hidden="true" /></span>
+      <span data-fullscreen-close hidden><Minimize2 size={17} aria-hidden="true" /></span>
     </button>
-    <button class="inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-[var(--color-black)] shadow-sm transition-colors hover:bg-white" type="button" aria-label="Next slide" data-slide-next>
-      <ChevronRight size={22} aria-hidden="true" />
+    <button type="button" aria-label="Next slide" data-slide-next>
+      <ChevronRight size={18} aria-hidden="true" />
     </button>
   </div>
 </section>
+
+<style>
+  .work-slideshow {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    overflow: hidden;
+    border-radius: var(--card-radius);
+    background: #f4f4f4;
+  }
+
+  .work-slideshow__stage,
+  .work-slideshow__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .work-slideshow__image {
+    max-width: none;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 700ms ease;
+  }
+
+  .work-slideshow__image.is-active {
+    opacity: 1;
+  }
+
+  .work-slideshow__controls {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    z-index: 2;
+    display: none;
+    gap: 10px;
+  }
+
+  .work-slideshow__controls button {
+    display: inline-flex;
+    width: var(--button-height);
+    height: var(--button-height);
+    align-items: center;
+    justify-content: center;
+    border: var(--stroke-weight) solid rgba(255, 255, 255, 0.72);
+    border-radius: var(--button-radius);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--soft-shadow);
+    color: var(--color-black);
+    cursor: pointer;
+    transition:
+      transform var(--motion-transition),
+      opacity var(--motion-transition);
+  }
+
+  .work-slideshow__controls button:hover,
+  .work-slideshow__controls button:focus-visible {
+    opacity: 0.86;
+    transform: translateY(var(--motion-hover-y));
+  }
+
+  .work-slideshow:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    border-radius: 0;
+    background: #000000;
+  }
+
+  .work-slideshow:fullscreen .work-slideshow__controls {
+    display: flex;
+  }
+
+  @media (min-width: 768px) {
+    .work-slideshow {
+      aspect-ratio: auto;
+      height: var(--slideshow-height);
+      border-radius: 0;
+    }
+
+    .work-slideshow__controls {
+      display: flex;
+    }
+  }
+</style>
 
 <script>
   document.querySelectorAll("[data-slideshow]").forEach((slideshow) => {
@@ -56,17 +138,23 @@ const slides = readdirSync(slidesDirectory)
     const previousButton = slideshow.querySelector("[data-slide-prev]");
     const nextButton = slideshow.querySelector("[data-slide-next]");
     const fullscreenButton = slideshow.querySelector("[data-slide-fullscreen]");
+    const fullscreenOpenIcon = slideshow.querySelector("[data-fullscreen-open]");
+    const fullscreenCloseIcon = slideshow.querySelector("[data-fullscreen-close]");
+    const controls = slideshow.querySelector("[data-slideshow-controls]");
+    const prefersDesktop = window.matchMedia("(min-width: 768px)");
+    const intervalValue = Number(
+      window.getComputedStyle(document.documentElement).getPropertyValue("--slideshow-interval").trim(),
+    );
+    const interval = Number.isFinite(intervalValue) && intervalValue > 0 ? intervalValue : 4000;
     let currentIndex = 0;
     let autoplayId;
 
     const showSlide = (nextIndex) => {
       if (!slides.length) return;
 
-      slides[currentIndex].classList.remove("opacity-100");
-      slides[currentIndex].classList.add("opacity-0");
+      slides[currentIndex]?.classList.remove("is-active");
       currentIndex = (nextIndex + slides.length) % slides.length;
-      slides[currentIndex].classList.remove("opacity-0");
-      slides[currentIndex].classList.add("opacity-100");
+      slides[currentIndex]?.classList.add("is-active");
     };
 
     const stopAutoplay = () => {
@@ -76,24 +164,82 @@ const slides = readdirSync(slidesDirectory)
 
     const startAutoplay = () => {
       stopAutoplay();
-      autoplayId = window.setInterval(() => showSlide(currentIndex + 1), 4000);
+      autoplayId = window.setInterval(() => showSlide(currentIndex + 1), interval);
     };
 
-    previousButton?.addEventListener("click", () => showSlide(currentIndex - 1));
-    nextButton?.addEventListener("click", () => showSlide(currentIndex + 1));
-    fullscreenButton?.addEventListener("click", () => {
-      if (document.fullscreenElement === slideshow) {
-        document.exitFullscreen();
-        return;
+    const lockLandscape = async () => {
+      try {
+        await screen.orientation?.lock?.("landscape");
+      } catch {
+        // Orientation lock is optional and unsupported on many browsers.
       }
+    };
 
-      slideshow.requestFullscreen?.();
+    const unlockOrientation = () => {
+      try {
+        screen.orientation?.unlock?.();
+      } catch {
+        // Keep fullscreen behavior working when orientation APIs are unavailable.
+      }
+    };
+
+    const enterFullscreen = async () => {
+      if (document.fullscreenElement === slideshow) return;
+
+      await slideshow.requestFullscreen?.();
+
+      if (!prefersDesktop.matches) {
+        await lockLandscape();
+      }
+    };
+
+    const exitFullscreen = () => {
+      if (document.fullscreenElement === slideshow) {
+        document.exitFullscreen?.();
+      }
+    };
+
+    previousButton?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      showSlide(currentIndex - 1);
+    });
+
+    nextButton?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      showSlide(currentIndex + 1);
+    });
+
+    fullscreenButton?.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      if (document.fullscreenElement === slideshow) {
+        exitFullscreen();
+      } else {
+        enterFullscreen();
+      }
+    });
+
+    controls?.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    slideshow.addEventListener("click", () => {
+      if (!prefersDesktop.matches) {
+        enterFullscreen();
+      }
     });
 
     document.addEventListener("fullscreenchange", () => {
-      if (document.fullscreenElement === slideshow) {
+      const isFullscreen = document.fullscreenElement === slideshow;
+
+      fullscreenButton?.setAttribute("aria-label", isFullscreen ? "Exit slideshow fullscreen" : "View slideshow fullscreen");
+      fullscreenOpenIcon?.toggleAttribute("hidden", isFullscreen);
+      fullscreenCloseIcon?.toggleAttribute("hidden", !isFullscreen);
+
+      if (isFullscreen) {
         stopAutoplay();
       } else {
+        unlockOrientation();
         startAutoplay();
       }
     });

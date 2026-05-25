@@ -1,7 +1,5 @@
 ---
 import "../styles/global.css";
-import Footer from "./Footer.astro";
-import Header from "./Header.astro";
 import SeoHead from "./SeoHead.astro";
 import { design } from "../config/design";
 import { site } from "../config/site";
@@ -22,51 +20,86 @@ interface Props {
   showFooter?: boolean;
 }
 
-const isHomepage = Astro.url.pathname === "/";
-const { showFooter = true } = Astro.props;
+const fontStack = (family: string) =>
+  family === "Instrument Serif" ? `"${family}", Georgia, serif` : `"${family}", system-ui, sans-serif`;
 
-const typography = design.typography;
-const defaultCuriosityCardPalette = design.colors.curiosityCardPalettes[0];
-const fontStack = (family: string) => `"${family}", system-ui, sans-serif`;
-const cssVar = (name: string, value: string | number) => `    --${name}: ${value};`;
-const typeCssVars = Object.entries(typography).flatMap(([name, value]) => [
-  cssVar(`type-${name}-family`, fontStack(value.family)),
-  cssVar(`type-${name}-weight`, value.weight),
-  cssVar(`type-${name}-mobile-size`, value.mobile.size),
-  cssVar(`type-${name}-mobile-line-height`, value.mobile.lineHeight),
-  cssVar(`type-${name}-desktop-size`, value.desktop.size),
-  cssVar(`type-${name}-desktop-line-height`, value.desktop.lineHeight),
-]);
-const colorCssVars = [
-  cssVar("color-white", design.colors.white),
+const cssVar = (name: string, value: string | number) => `  --${name}: ${value};`;
+const hexToRgb = (hex: string) => {
+  const value = hex.replace("#", "");
+  const r = Number.parseInt(value.slice(0, 2), 16);
+  const g = Number.parseInt(value.slice(2, 4), 16);
+  const b = Number.parseInt(value.slice(4, 6), 16);
+
+  return `${r} ${g} ${b}`;
+};
+
+const typeNames = ["h1", "h2", "h3", "p1", "p2", "p3", "btn", "cta", "n1", "n2", "n0"] as const;
+const typeVars = typeNames.flatMap((name) => {
+  const mobile = design.typography.mobile[name];
+  const desktop = design.typography.desktop[name];
+
+  return [
+    cssVar(`type-${name}-family`, fontStack(mobile.font)),
+    cssVar(`type-${name}-weight`, mobile.weight),
+    cssVar(`type-${name}-mobile-size`, mobile.size),
+    cssVar(`type-${name}-mobile-line-height`, mobile.lineHeight),
+    cssVar(`type-${name}-desktop-size`, desktop.size),
+    cssVar(`type-${name}-desktop-line-height`, desktop.lineHeight),
+    cssVar(`type-${name}-desktop-weight`, desktop.weight),
+  ];
+});
+
+const shadow = design.shadow;
+const softShadow = [
+  shadow.x,
+  shadow.y,
+  shadow.blur,
+  shadow.spread,
+  `rgb(${hexToRgb(shadow.color)} / ${shadow.opacity})`,
+].join(" ");
+const explicitShadow = [
+  shadow.x,
+  shadow.y,
+  shadow.blur,
+  shadow.spread,
+  `rgb(${hexToRgb(shadow.color)} / 0.08)`,
+].join(" ");
+const designVars = [
   cssVar("color-black", design.colors.black),
-  cssVar("color-light-grey", design.colors.lightGrey),
-  cssVar("color-dark-grey", design.colors.darkGrey),
-  cssVar("color-light-grey-on-light-grey", design.colors.lightGreyOnLightGrey),
-  cssVar("link-color", design.colors.linkColor),
-  cssVar("link-hover", design.colors.linkHover),
-  cssVar("link-blue", design.colors.buttons.primary.background),
-  cssVar("link-blue-hover", design.colors.buttons.primary.hoverBackground),
-  cssVar("card-bg", defaultCuriosityCardPalette.background),
-  cssVar("card-text", defaultCuriosityCardPalette.text),
-  cssVar("card-bg-hover", defaultCuriosityCardPalette.hoverBackground),
+  cssVar("color-grey", design.colors.grey),
+  cssVar("color-white", design.colors.white),
+  cssVar("color-stroke", design.stroke.color),
+  cssVar("stroke-weight", design.stroke.weight),
+  cssVar("page-max-width", design.layout.maxWidth.default),
+  cssVar("article-max-width", design.layout.maxWidth.article),
+  cssVar("side-padding-mobile", design.layout.sidePadding.mobile),
+  cssVar("side-padding-desktop", design.layout.sidePadding.desktop),
+  cssVar("layout-spacer", design.layout.spacer),
+  cssVar("top-button-offset-mobile", design.layout.topButtonOffset.mobile),
+  cssVar("top-button-offset-desktop", design.layout.topButtonOffset.desktop),
+  cssVar("top-button-offset", "var(--top-button-offset-mobile)"),
+  cssVar("top-content-offset", design.layout.topContentOffset),
+  cssVar("note-intro-gap", design.layout.noteIntroGap),
+  cssVar("note-title-gap", design.layout.spacer),
+  cssVar("article-heading-gap-mobile", design.layout.articleHeadingGap.mobile),
+  cssVar("article-heading-gap-desktop", design.layout.articleHeadingGap.desktop),
+  cssVar("section-gap-desktop", design.layout.sectionGap.desktop),
+  cssVar("section-gap-mobile", design.layout.sectionGap.mobile),
+  cssVar("button-height", design.button.height),
+  cssVar("button-radius", design.button.radius),
+  cssVar("card-radius", design.card.radius),
+  cssVar("shadow", explicitShadow),
+  cssVar("soft-shadow", softShadow),
+  cssVar("motion-hover-y", design.motion.hoverTranslateY),
+  cssVar("motion-transition", design.motion.transition),
+  cssVar("font-heading", fontStack(design.typography.mobile.h1.font)),
+  cssVar("font-body", fontStack(design.typography.mobile.p2.font)),
+  cssVar("slideshow-interval", design.slideshow.interval),
+  cssVar("slideshow-height", design.slideshow.height),
+  ...typeVars,
 ];
-const designCss = `
-  :root {
-${[
-  cssVar("corner-radius", `${design.cornerRadius}px`),
-  cssVar("button-radius", `${design.buttonRadius}px`),
-  cssVar("button-height", `${design.buttonHeight}px`),
-  cssVar("feature-height", `${design.featureHeight}px`),
-  cssVar("gutter-small", `${design.gutterSmall}px`),
-  cssVar("gutter-large", `${design.gutterLarge}px`),
-  cssVar("font-heading", fontStack(typography.h1.family)),
-  cssVar("font-body", fontStack(typography.p.family)),
-  ...colorCssVars,
-  ...typeCssVars,
-].join("\n")}
-  }
-`;
+
+const designCss = `:root {\n${designVars.join("\n")}\n}`;
 ---
 
 <!doctype html>
@@ -89,10 +122,8 @@ ${[
     <style is:global set:html={designCss}></style>
   </head>
   <body>
-    <Header />
     <main>
       <slot />
     </main>
-    {showFooter && <Footer variant={isHomepage ? "dark" : "default"} />}
   </body>
 </html>
