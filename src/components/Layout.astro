@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import AuraBackground from "./AuraBackground.astro";
 import SeoHead from "./SeoHead.astro";
 import { design } from "../config/design";
 import { site } from "../config/site";
@@ -101,10 +100,6 @@ const designVars = [
 ];
 
 const designCss = `:root {\n${designVars.join("\n")}\n}`;
-// Set this to false to temporarily disable the homepage aura background.
-// To remove it completely, delete this import, boolean, render line, and src/components/AuraBackground.astro.
-const enableAuraBackground = true;
-const showAuraBackground = enableAuraBackground && Astro.url.pathname === "/";
 ---
 
 <!doctype html>
@@ -127,7 +122,6 @@ const showAuraBackground = enableAuraBackground && Astro.url.pathname === "/";
     <style is:global set:html={designCss}></style>
   </head>
   <body>
-    {showAuraBackground && <AuraBackground />}
     <main>
       <slot />
     </main>
