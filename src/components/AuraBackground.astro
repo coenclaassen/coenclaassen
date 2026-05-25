@@ -1,0 +1,151 @@
+<div class="aura-background" aria-hidden="true" data-aura-background>
+  <span class="aura aura--gold"></span>
+  <span class="aura aura--peach"></span>
+  <span class="aura aura--grey"></span>
+  <span class="aura aura--cream"></span>
+</div>
+
+<style>
+  :global(body) {
+    background: #fffdf8;
+  }
+
+  :global(main) {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+  }
+
+  :global(.home-view) {
+    background: transparent;
+  }
+
+  .aura-background {
+    --aura-x: 0px;
+    --aura-y: 0px;
+    --aura-x-reverse: 0px;
+    --aura-y-reverse: 0px;
+    --aura-scroll: 0px;
+    --aura-scroll-reverse: 0px;
+
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(180deg, #fffdf8 0%, #fbfaf6 52%, #ffffff 100%);
+  }
+
+  .aura {
+    position: absolute;
+    display: block;
+    width: 56vw;
+    height: 56vw;
+    min-width: 620px;
+    min-height: 620px;
+    border-radius: 999px;
+    filter: blur(44px);
+    opacity: 0.42;
+    will-change: transform;
+    transition: transform 240ms ease-out;
+  }
+
+  .aura--gold {
+    top: -18%;
+    left: -10%;
+    background: radial-gradient(circle, rgb(246 210 120 / 0.52) 0%, rgb(246 210 120 / 0.2) 38%, transparent 72%);
+    transform: translate3d(var(--aura-x), calc(var(--aura-y) + var(--aura-scroll-reverse)), 0);
+  }
+
+  .aura--peach {
+    right: -18%;
+    top: 18%;
+    background: radial-gradient(circle, rgb(229 174 137 / 0.34) 0%, rgb(229 174 137 / 0.14) 40%, transparent 74%);
+    transform: translate3d(var(--aura-x-reverse), var(--aura-y), 0);
+  }
+
+  .aura--grey {
+    right: 4%;
+    bottom: -22%;
+    background: radial-gradient(circle, rgb(156 155 148 / 0.24) 0%, rgb(156 155 148 / 0.12) 42%, transparent 76%);
+    transform: translate3d(var(--aura-x), calc(var(--aura-y-reverse) + var(--aura-scroll)), 0);
+  }
+
+  .aura--cream {
+    left: 22%;
+    bottom: -26%;
+    background: radial-gradient(circle, rgb(248 231 174 / 0.28) 0%, rgb(248 231 174 / 0.14) 36%, transparent 72%);
+    transform: translate3d(var(--aura-x-reverse), calc(var(--aura-y-reverse) + var(--aura-scroll-reverse)), 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aura {
+      transition: none;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const root = document.querySelector("[data-aura-background]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (!root || reducedMotion.matches) return;
+
+    const pointerStrength = 18;
+    const scrollStrength = 0.025;
+    let targetX = 0;
+    let targetY = 0;
+    let targetScroll = window.scrollY * scrollStrength;
+    let currentX = 0;
+    let currentY = 0;
+    let currentScroll = targetScroll;
+    let frameId = 0;
+
+    const setAuraVars = () => {
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      currentScroll += (targetScroll - currentScroll) * 0.08;
+
+      root.style.setProperty("--aura-x", `${currentX.toFixed(2)}px`);
+      root.style.setProperty("--aura-y", `${currentY.toFixed(2)}px`);
+      root.style.setProperty("--aura-x-reverse", `${(-currentX).toFixed(2)}px`);
+      root.style.setProperty("--aura-y-reverse", `${(-currentY).toFixed(2)}px`);
+      root.style.setProperty("--aura-scroll", `${currentScroll.toFixed(2)}px`);
+      root.style.setProperty("--aura-scroll-reverse", `${(-currentScroll).toFixed(2)}px`);
+
+      const isSettled =
+        Math.abs(targetX - currentX) < 0.08 &&
+        Math.abs(targetY - currentY) < 0.08 &&
+        Math.abs(targetScroll - currentScroll) < 0.08;
+
+      frameId = isSettled ? 0 : window.requestAnimationFrame(setAuraVars);
+    };
+
+    const requestAuraFrame = () => {
+      if (!frameId) {
+        frameId = window.requestAnimationFrame(setAuraVars);
+      }
+    };
+
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        targetX = (event.clientX / window.innerWidth - 0.5) * pointerStrength;
+        targetY = (event.clientY / window.innerHeight - 0.5) * pointerStrength;
+        requestAuraFrame();
+      },
+      { passive: true },
+    );
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        targetScroll = window.scrollY * scrollStrength;
+        requestAuraFrame();
+      },
+      { passive: true },
+    );
+  })();
+</script>
