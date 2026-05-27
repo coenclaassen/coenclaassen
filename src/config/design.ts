@@ -96,7 +96,7 @@ export const design = {
       },
       p1: {
         font: "DM Sans",
-        size: "18px",
+        size: "15px",
         lineHeight: "150%",
         weight: 300,
       },
