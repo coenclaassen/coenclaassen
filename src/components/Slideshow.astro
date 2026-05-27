@@ -14,7 +14,33 @@ const slides = readdirSync(slidesDirectory)
   .filter((filename) => filename.endsWith(".webp") && /\d+/.test(filename))
   .sort((a, b) => getSlideNumber(a) - getSlideNumber(b) || a.localeCompare(b))
   .map((filename) => `/images/slides/${filename}`);
+const initialSlideStyle = [
+  "html[data-work-slide-index] .work-slideshow:not(.is-ready) .work-slideshow__image { opacity: 0; }",
+  ...slides.map(
+    (_, index) =>
+      `html[data-work-slide-index="${index}"] .work-slideshow:not(.is-ready) .work-slideshow__image[data-slide-index="${index}"] { opacity: 1; }`,
+  ),
+].join("\n");
 ---
+
+<style is:inline set:html={initialSlideStyle}></style>
+<script define:vars={{ slideSources: slides }}>
+  (() => {
+    if (!slideSources.length) return;
+
+    const initialIndex = Math.floor(Math.random() * slideSources.length);
+    document.documentElement.dataset.workSlideIndex = String(initialIndex);
+
+    const initialSlide = slideSources[initialIndex];
+    if (initialSlide) {
+      const preload = document.createElement("link");
+      preload.rel = "preload";
+      preload.as = "image";
+      preload.href = initialSlide;
+      document.head.append(preload);
+    }
+  })();
+</script>
 
 <section class="work-slideshow" aria-label={label} data-slideshow>
   <div class="work-slideshow__stage">
@@ -26,20 +52,21 @@ const slides = readdirSync(slidesDirectory)
           alt={`Selected work slide ${index + 1}`}
           loading={index === 0 ? "eager" : "lazy"}
           data-slide
+          data-slide-index={index}
         />
       ))
     }
   </div>
 
   <div class="work-slideshow__controls" data-slideshow-controls>
-    <button type="button" aria-label="Previous slide" data-slide-prev>
+    <button class="work-slideshow__nav-button" type="button" aria-label="Previous slide" data-slide-prev>
       <ChevronLeft size={18} aria-hidden="true" />
     </button>
-    <button type="button" aria-label="View slideshow fullscreen" data-slide-fullscreen>
+    <button class="work-slideshow__fullscreen-button" type="button" aria-label="View slideshow fullscreen" data-slide-fullscreen>
       <span data-fullscreen-open><Maximize2 size={17} aria-hidden="true" /></span>
       <span data-fullscreen-close hidden><Minimize2 size={17} aria-hidden="true" /></span>
     </button>
-    <button type="button" aria-label="Next slide" data-slide-next>
+    <button class="work-slideshow__nav-button" type="button" aria-label="Next slide" data-slide-next>
       <ChevronRight size={18} aria-hidden="true" />
     </button>
   </div>
@@ -80,7 +107,7 @@ const slides = readdirSync(slidesDirectory)
     right: 18px;
     bottom: 18px;
     z-index: 2;
-    display: none;
+    display: flex;
     gap: 10px;
   }
 
@@ -107,6 +134,10 @@ const slides = readdirSync(slidesDirectory)
     transform: translateY(var(--motion-hover-y));
   }
 
+  .work-slideshow__controls .work-slideshow__nav-button {
+    display: none;
+  }
+
   .work-slideshow:fullscreen {
     width: 100vw;
     height: 100vh;
@@ -119,6 +150,10 @@ const slides = readdirSync(slidesDirectory)
     display: flex;
   }
 
+  .work-slideshow:fullscreen .work-slideshow__controls .work-slideshow__nav-button {
+    display: inline-flex;
+  }
+
   @media (min-width: 768px) {
     .work-slideshow {
       aspect-ratio: auto;
@@ -128,6 +163,10 @@ const slides = readdirSync(slidesDirectory)
 
     .work-slideshow__controls {
       display: flex;
+    }
+
+    .work-slideshow__controls .work-slideshow__nav-button {
+      display: inline-flex;
     }
   }
 </style>
@@ -146,7 +185,10 @@ const slides = readdirSync(slidesDirectory)
       window.getComputedStyle(document.documentElement).getPropertyValue("--slideshow-interval").trim(),
     );
     const interval = Number.isFinite(intervalValue) && intervalValue > 0 ? intervalValue : 4000;
-    let currentIndex = 0;
+    let currentIndex = Math.max(
+      slides.findIndex((slide) => slide.classList.contains("is-active")),
+      0,
+    );
     let autoplayId;
 
     const showSlide = (nextIndex) => {
@@ -244,6 +286,10 @@ const slides = readdirSync(slidesDirectory)
       }
     });
 
+    const initialSlideIndex = Number(document.documentElement.dataset.workSlideIndex);
+
+    showSlide(Number.isInteger(initialSlideIndex) ? initialSlideIndex : Math.floor(Math.random() * slides.length));
+    slideshow.classList.add("is-ready");
     startAutoplay();
   });
 </script>
