@@ -59,13 +59,13 @@ export const design = {
         font: "DM Sans",
         size: "22px",
         lineHeight: "150%",
-        weight: 300,
+        weight: 400,
       },
       n2: {
         font: "DM Sans",
         size: "16px",
         lineHeight: "150%",
-        weight: 300,
+        weight: 400,
       },
       n0: {
         font: "DM Sans",
@@ -128,13 +128,13 @@ export const design = {
         font: "DM Sans",
         size: "18px",
         lineHeight: "150%",
-        weight: 300,
+        weight: 400,
       },
       n2: {
         font: "DM Sans",
         size: "15px",
         lineHeight: "150%",
-        weight: 300,
+        weight: 400,
       },
       n0: {
         font: "DM Sans",
