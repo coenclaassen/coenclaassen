@@ -1,0 +1,104 @@
+---
+import Layout from "./Layout.astro";
+
+const robots = "noindex, nofollow, noarchive, nosnippet";
+---
+
+<Layout
+  title="There, I fixed it."
+  description="A small private calendar utility."
+  canonical="/dev/ducktapecalendar"
+  robots={robots}
+>
+  <article class="tool-page article-container">
+    <header class="tool-intro">
+      <h1>There, I fixed it.</h1>
+
+      <div class="tool-copy">
+        <p>This is a small calendar tool.</p>
+        <p>It has one job: help manage a personal calendar through other apps.</p>
+        <p>It’s a little duct-taped together, but it works.</p>
+      </div>
+
+      <nav aria-label="Page sections">
+        <a href="#privacy">Privacy</a> | <a href="#terms">Terms</a>
+      </nav>
+    </header>
+
+    <section class="tool-section" aria-labelledby="privacy">
+      <h2 id="privacy">Privacy</h2>
+
+      <div class="tool-copy">
+        <p>Calendar data is used only to perform requested calendar actions.</p>
+        <p>Credentials and application state are kept on private systems.</p>
+        <p>
+          When a requested action depends on another service, only the data needed for that action may be processed by that
+          service.
+        </p>
+        <p>Calendar data is not sold, used for advertising, or shared for unrelated purposes.</p>
+        <p>Access can be revoked through the connected Google Account at any time.</p>
+      </div>
+    </section>
+
+    <section class="tool-section" aria-labelledby="terms">
+      <h2 id="terms">Terms</h2>
+
+      <div class="tool-copy">
+        <p>This is a small utility, not a commercial service.</p>
+        <p>There are no public user accounts and no guarantee it will exist forever.</p>
+        <p>It may change, break, get fixed with more duct tape, or disappear entirely.</p>
+      </div>
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .tool-page {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .tool-intro,
+  .tool-section,
+  .tool-copy {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tool-intro {
+    gap: 30px;
+  }
+
+  .tool-copy {
+    gap: 16px;
+  }
+
+  nav {
+    color: var(--color-grey);
+  }
+
+  .tool-section {
+    gap: 24px;
+    margin-top: 80px;
+    scroll-margin-top: 30px;
+  }
+
+  .tool-intro + .tool-section {
+    margin-top: 130px;
+  }
+
+  @media (min-width: 768px) {
+    .tool-page {
+      padding-top: 120px;
+      padding-bottom: 120px;
+    }
+
+    .tool-section {
+      margin-top: 100px;
+    }
+
+    .tool-intro + .tool-section {
+      margin-top: 180px;
+    }
+  }
+</style>

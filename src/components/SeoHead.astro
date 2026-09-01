@@ -14,6 +14,7 @@ interface Props {
   modifiedDate?: string;
   author?: string;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  robots?: string;
 }
 
 const pageTitle = Astro.props.title ?? site.title;
@@ -39,6 +40,7 @@ const stringifyJsonLd = (item: Record<string, unknown>) => JSON.stringify(item).
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
+{Astro.props.robots && <meta name="robots" content={Astro.props.robots} />}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="canonical" href={canonicalUrl} />
 <meta property="og:site_name" content={site.name} />
