@@ -79,7 +79,7 @@ const initialSlideStyle = [
     aspect-ratio: 1 / 1;
     height: auto;
     overflow: hidden;
-    border-radius: var(--card-radius);
+    border-radius: 0;
     background: #f4f4f4;
   }
 
@@ -104,7 +104,7 @@ const initialSlideStyle = [
 
   .work-slideshow__controls {
     position: absolute;
-    right: 18px;
+    right: var(--side-padding-mobile);
     bottom: 18px;
     z-index: 2;
     display: flex;
@@ -135,7 +135,7 @@ const initialSlideStyle = [
   }
 
   .work-slideshow__controls .work-slideshow__nav-button {
-    display: none;
+    display: inline-flex;
   }
 
   .work-slideshow:fullscreen {
@@ -163,6 +163,7 @@ const initialSlideStyle = [
 
     .work-slideshow__controls {
       display: flex;
+      right: 18px;
     }
 
     .work-slideshow__controls .work-slideshow__nav-button {

@@ -1,0 +1,389 @@
+---
+import ButtonLink from "./ButtonLink.astro";
+import Layout from "./Layout.astro";
+import { Compass, Copy, Globe, Mail, Phone, UserRoundPlus } from "@lucide/astro";
+import { site } from "../config/site";
+
+const robots = "noindex, nofollow, noarchive, nosnippet";
+---
+
+<Layout title="Coen Claassen" description="Personal contact card for Coen Claassen." canonical="/hello" robots={robots}>
+  <section class="hello-page">
+    <div class="hello-container">
+      <div class="hello-actions">
+        <h1 class="type-h1 hello-title">Something is about to happen.</h1>
+
+        <nav class="hello-buttons" aria-label="Contact and links">
+          <ButtonLink href="/hello.vcf">
+            <span class="hello-button-label"><UserRoundPlus size={17} aria-hidden="true" />Add me to contacts</span>
+          </ButtonLink>
+          <ButtonLink href={site.linkedinHref} variant="secondary">
+            <span class="hello-button-label hello-button-label--grid">
+              <span class="hello-linkedin-mark" aria-hidden="true">in</span><span>Let's connect</span>
+            </span>
+          </ButtonLink>
+          <ButtonLink href={site.whatsappHref} variant="secondary">
+            <span class="hello-button-label hello-button-label--grid">
+              <img src="https://cdn.simpleicons.org/whatsapp/2D2D2D" alt="" width="17" height="17" /><span>WhatsApp me</span>
+            </span>
+          </ButtonLink>
+          <ButtonLink href="/" variant="secondary">
+            <span class="hello-button-label hello-button-label--grid"><Globe size={17} aria-hidden="true" /><span>Visit my website</span></span>
+          </ButtonLink>
+          <ButtonLink href={site.offTrailRunHref} variant="secondary">
+            <span class="hello-button-label hello-button-label--grid"><Compass size={17} aria-hidden="true" /><span>Run with a map</span></span>
+          </ButtonLink>
+          <ButtonLink button confettiButton variant="secondary">Do not press!</ButtonLink>
+        </nav>
+      </div>
+
+      <section class="hello-profile" aria-labelledby="hello-profile-name">
+        <img class="hello-photo" src="/images/about/pixel1.webp" alt="Pixel portrait of Coen Claassen" width="84" height="84" data-profile-image />
+        <h2 id="hello-profile-name" class="hello-name">Coen Claassen</h2>
+        <p class="type-p2 hello-description">
+          I turn vague ideas, doubts, and opinions into something teams can actually build, test and ship.
+        </p>
+        <div class="hello-contact-fields" aria-label="Copy contact details">
+          <button type="button" data-copy-contact data-copy-value={site.phone}>
+            <span class="hello-contact-value"><Phone size={15} aria-hidden="true" /><span>+31 6 393 10529</span></span>
+            <Copy size={18} aria-hidden="true" />
+          </button>
+          <button type="button" data-copy-contact data-copy-value={site.contactCardEmail}>
+            <span class="hello-contact-value"><Mail size={15} aria-hidden="true" /><span>{site.contactCardEmail}</span></span>
+            <Copy size={18} aria-hidden="true" />
+          </button>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hello-page {
+    min-height: 100svh;
+    padding: 80px 0 50px;
+  }
+
+  .hello-container {
+    width: min(86vw, 420px);
+    margin: 0 auto;
+  }
+
+  .hello-actions {
+    text-align: left;
+  }
+
+  .hello-title {
+    max-width: 460px;
+    font-size: clamp(40px, 12vw, 52px);
+    line-height: 112%;
+  }
+
+  .hello-buttons {
+    display: grid;
+    gap: 15px;
+    width: 100%;
+    margin-top: 50px;
+  }
+
+  .hello-buttons :global(.button-link) {
+    width: 100%;
+  }
+
+  .hello-button-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hello-button-label img {
+    display: block;
+  }
+
+  .hello-button-label--grid {
+    display: grid;
+    grid-template-columns: 17px 1fr;
+    width: 160px;
+    align-items: center;
+    column-gap: 8px;
+    text-align: left;
+    transform: translateX(12px);
+  }
+
+  .hello-linkedin-mark {
+    align-self: center;
+    color: var(--color-black);
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -1.8px;
+    line-height: 0.8;
+    transform: translateY(-2px);
+  }
+
+  .hello-profile {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    margin-top: 100px;
+    text-align: center;
+  }
+
+  .hello-description {
+    max-width: 280px;
+    margin-top: 0;
+    font-size: 16px;
+  }
+
+  .hello-photo {
+    width: 84px;
+    height: 84px;
+    margin-top: 0;
+    border-radius: 50%;
+    background: rgb(45 45 45 / 0.15);
+    image-rendering: pixelated;
+    object-fit: cover;
+  }
+
+  .hello-name {
+    margin-top: 8px;
+    color: var(--color-black);
+    font-family: "Jost", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    line-height: 130%;
+    text-transform: uppercase;
+  }
+
+  .hello-contact-fields {
+    display: grid;
+    width: 100%;
+    margin-top: 20px;
+    gap: 10px;
+  }
+
+  .hello-contact-fields button {
+    display: flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(45 45 45 / 0.04);
+    color: var(--color-black);
+    cursor: pointer;
+    font-family: var(--type-p3-family);
+    font-size: var(--type-p2-mobile-size);
+    font-weight: var(--type-p3-weight);
+    line-height: var(--type-p2-mobile-line-height);
+    transition: background 80ms ease;
+  }
+
+  .hello-contact-fields button.is-copied {
+    background: rgb(45 45 45 / 0.11);
+  }
+
+  .hello-contact-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  :global(.hello-confetti-piece) {
+    position: fixed;
+    top: var(--confetti-top);
+    left: var(--confetti-left);
+    z-index: 20;
+    width: 8px;
+    height: 12px;
+    background: var(--confetti-color);
+    pointer-events: none;
+    transform: rotate(var(--confetti-rotate));
+    animation: hello-confetti 900ms ease-out forwards;
+  }
+
+  .hello-buttons :global(.button-link.is-spinning) {
+    cursor: wait;
+    opacity: 0.55;
+  }
+
+  .hello-buttons :global(.button-link.is-shaking) {
+    animation: hello-button-shake 260ms ease-in-out;
+  }
+
+  @keyframes hello-confetti {
+    to {
+      opacity: 0;
+      transform: translate(var(--confetti-x), var(--confetti-y)) rotate(540deg);
+    }
+  }
+
+  @keyframes hello-button-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-5px);
+    }
+
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .hello-container {
+      width: min(86vw, 600px);
+    }
+
+    .hello-buttons,
+    .hello-profile {
+      max-width: 420px;
+    }
+
+    .hello-page {
+      padding: 60px 0;
+    }
+
+    .hello-contact-fields button {
+      font-size: var(--type-p2-desktop-size);
+      line-height: var(--type-p2-desktop-line-height);
+    }
+
+    .hello-title {
+      max-width: 460px;
+      font-size: 64px;
+    }
+  }
+</style>
+
+<script>
+  const confettiButton = document.querySelector("[data-confetti-button]");
+  const profileImage = document.querySelector("[data-profile-image]");
+  const copyButtons = document.querySelectorAll("[data-copy-contact]");
+  const confettiColors = ["#ff6b6b", "#f7c948", "#43aa8b", "#5571e6"];
+  const pixelImageNumbers = Array.from({ length: 5 }, (_, index) => index + 1);
+  const spinDelays = [45, 45, 55, 65, 80, 100, 130, 160];
+  const copyFeedbackTimeouts = new WeakMap();
+  let currentPixelImage = 1;
+  let isSpinning = false;
+
+  const copyText = async (value) => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+
+    const copyInput = document.createElement("textarea");
+    copyInput.value = value;
+    copyInput.style.position = "fixed";
+    copyInput.style.opacity = "0";
+    document.body.append(copyInput);
+    copyInput.select();
+    document.execCommand("copy");
+    copyInput.remove();
+  };
+
+  const launchConfetti = () => {
+    if (!confettiButton) return;
+
+    const bounds = profileImage?.getBoundingClientRect() ?? confettiButton.getBoundingClientRect();
+
+    for (let index = 0; index < 42; index += 1) {
+      const piece = document.createElement("span");
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 90 + Math.random() * 150;
+
+      piece.className = "hello-confetti-piece";
+      piece.style.setProperty("--confetti-top", `${bounds.top + bounds.height / 2 - 60}px`);
+      piece.style.setProperty("--confetti-left", `${bounds.left + bounds.width / 2}px`);
+      piece.style.setProperty("--confetti-x", `${Math.cos(angle) * distance}px`);
+      piece.style.setProperty("--confetti-y", `${Math.sin(angle) * distance + 150}px`);
+      piece.style.setProperty("--confetti-rotate", `${Math.random() * 180}deg`);
+      piece.style.setProperty("--confetti-color", confettiColors[index % confettiColors.length]);
+      piece.addEventListener("animationend", () => piece.remove());
+      document.body.append(piece);
+    }
+
+  };
+
+  const randomPixelImage = (excludedImage) => {
+    const availablePixelImages = pixelImageNumbers.filter((imageNumber) => imageNumber !== excludedImage);
+    return availablePixelImages[Math.floor(Math.random() * availablePixelImages.length)];
+  };
+
+  const setProfileImage = (imageNumber) => {
+    if (profileImage) profileImage.src = `/images/about/pixel${imageNumber}.webp`;
+  };
+
+  const shakeButton = () => {
+    if (!confettiButton) return;
+
+    confettiButton.classList.remove("is-shaking");
+    void confettiButton.offsetWidth;
+    confettiButton.classList.add("is-shaking");
+    confettiButton.addEventListener("animationend", () => confettiButton.classList.remove("is-shaking"), { once: true });
+  };
+
+  const spinProfileImage = () => {
+    if (!confettiButton) return;
+
+    isSpinning = true;
+    confettiButton.classList.add("is-spinning");
+    confettiButton.setAttribute("aria-disabled", "true");
+
+    const finalPixelImage = randomPixelImage(currentPixelImage);
+    let spinningPixelImage = currentPixelImage;
+
+    const showNextImage = (index) => {
+      if (index === spinDelays.length) {
+        currentPixelImage = finalPixelImage;
+        setProfileImage(currentPixelImage);
+        confettiButton.classList.remove("is-spinning");
+        confettiButton.removeAttribute("aria-disabled");
+        isSpinning = false;
+        if (currentPixelImage === 5) launchConfetti();
+        return;
+      }
+
+      const availableImages = pixelImageNumbers.filter(
+        (imageNumber) => imageNumber !== spinningPixelImage && imageNumber !== finalPixelImage,
+      );
+      spinningPixelImage = availableImages[Math.floor(Math.random() * availableImages.length)];
+      setProfileImage(spinningPixelImage);
+      window.setTimeout(() => showNextImage(index + 1), spinDelays[index]);
+    };
+
+    showNextImage(0);
+  };
+
+  confettiButton?.addEventListener("click", () => {
+    if (isSpinning) {
+      shakeButton();
+      return;
+    }
+
+    spinProfileImage();
+  });
+
+  copyButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      const value = button.getAttribute("data-copy-value");
+
+      if (!value) return;
+
+      try {
+        await copyText(value);
+        window.clearTimeout(copyFeedbackTimeouts.get(button));
+        button.classList.remove("is-copied");
+        void button.offsetWidth;
+        button.classList.add("is-copied");
+        copyFeedbackTimeouts.set(button, window.setTimeout(() => button.classList.remove("is-copied"), 140));
+      } catch {}
+    });
+  });
+</script>

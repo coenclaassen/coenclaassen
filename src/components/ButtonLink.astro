@@ -1,22 +1,36 @@
 ---
 interface Props {
-  href: string;
+  href?: string;
   label?: string;
   variant?: "primary" | "secondary";
+  button?: boolean;
+  confettiButton?: boolean;
 }
 
-const { href, label, variant = "primary" } = Astro.props;
+const { href = "#", label, variant = "primary", button = false, confettiButton = false } = Astro.props;
 const isExternal = href.startsWith("http");
 ---
 
-<a
-  class:list={["button-link", variant === "secondary" && "button-link--secondary"]}
-  href={href}
-  target={isExternal ? "_blank" : undefined}
-  rel={isExternal ? "noreferrer" : undefined}
->
-  <slot>{label}</slot>
-</a>
+{
+  button ? (
+    <button
+      class:list={["button-link", variant === "secondary" && "button-link--secondary"]}
+      type="button"
+      data-confetti-button={confettiButton ? "" : undefined}
+    >
+      <slot>{label}</slot>
+    </button>
+  ) : (
+    <a
+      class:list={["button-link", variant === "secondary" && "button-link--secondary"]}
+      href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noreferrer" : undefined}
+    >
+      <slot>{label}</slot>
+    </a>
+  )
+}
 
 <style>
   .button-link {

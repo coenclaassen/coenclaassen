@@ -10,6 +10,10 @@ export const site = {
   ogImageHeight: 630,
   email: "hello@coenclaassen.com",
   emailHref: "mailto:hello@coenclaassen.com",
+  contactCardEmail: "coenclaassen@gmail.com",
+  contactCardEmailHref: "mailto:coenclaassen@gmail.com",
+  phone: "+31639310529",
+  whatsappHref: "https://wa.me/31639310529",
   linkedinHref: "https://www.linkedin.com/in/coenclaassen/",
   offTrailRunHref: "https://www.offtrailrun.com",
   knowsAbout: [

@@ -196,7 +196,7 @@ export const design = {
 
   slideshow: {
     interval: 4000,
-    height: "60vh",
+    height: "80vh",
   },
 
   motion: {
