@@ -5,7 +5,7 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
 ---
 
 <Layout title="Coen Claassen QR" description="QR code for Coen Claassen's contact page." canonical="/hello/qr" robots={robots}>
-  <section class="qr-page" aria-label="QR code for Coen Claassen's contact page">
+  <section class="qr-page" aria-label="QR code for Coen Claassen's contact page" data-qr-page>
     <img src="/images/hello/qr.png" alt="QR code that opens Coen Claassen's contact page" width="1000" height="1000" />
   </section>
 </Layout>
@@ -29,3 +29,13 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
     height: auto;
   }
 </style>
+
+<script>
+  const qrPage = document.querySelector("[data-qr-page]");
+
+  qrPage?.addEventListener("click", async () => {
+    if (document.fullscreenElement === qrPage) return;
+
+    await qrPage.requestFullscreen?.();
+  });
+</script>
