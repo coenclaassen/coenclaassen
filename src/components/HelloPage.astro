@@ -30,15 +30,19 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
           <ButtonLink href="/" variant="secondary">
             <span class="hello-button-label hello-button-label--grid"><Globe size={17} aria-hidden="true" /><span>Visit my website</span></span>
           </ButtonLink>
-          <ButtonLink href={site.offTrailRunHref} variant="secondary">
+          <ButtonLink href={site.offTrailRunHref} variant="secondary" openInNewTab={false}>
             <span class="hello-button-label hello-button-label--grid"><Compass size={17} aria-hidden="true" /><span>Run with a map</span></span>
           </ButtonLink>
-          <ButtonLink button confettiButton variant="secondary">Do not press!</ButtonLink>
+          <div class="hello-unlock">
+            <ButtonLink button confettiButton variant="secondary">Do not press!</ButtonLink>
+            <p class="hello-unlock-message" data-unlock-message hidden aria-live="polite">
+              You kept pressing!<br />Now press the other buttons.
+            </p>
+          </div>
         </nav>
       </div>
 
-      <section class="hello-profile" aria-labelledby="hello-profile-name">
-        <img class="hello-photo" src="/images/about/pixel1.webp" alt="Pixel portrait of Coen Claassen" width="84" height="84" data-profile-image />
+      <section class="hello-details" aria-labelledby="hello-profile-name">
         <h2 id="hello-profile-name" class="hello-name">Coen Claassen</h2>
         <p class="type-p2 hello-description">
           I turn vague ideas, doubts, and opinions into something teams can actually build, test and ship.
@@ -90,6 +94,36 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
     width: 100%;
   }
 
+  .hello-buttons :global(.button-link--secondary) {
+    transition:
+      transform var(--motion-transition),
+      opacity var(--motion-transition),
+      border-color var(--motion-transition),
+      background 80ms ease;
+  }
+
+  .hello-buttons :global(.button-link.is-counting) {
+    background: rgb(45 45 45 / 0.11);
+  }
+
+  .hello-unlock {
+    display: grid;
+    min-height: var(--button-height);
+  }
+
+  .hello-unlock-message {
+    display: grid;
+    min-height: var(--button-height);
+    place-items: center;
+    margin: 0;
+    color: var(--color-grey);
+    font-family: var(--type-p2-family);
+    font-size: var(--type-p2-mobile-size);
+    font-weight: var(--type-p2-weight);
+    line-height: var(--type-p2-mobile-line-height);
+    text-align: center;
+  }
+
   .hello-button-label {
     display: inline-flex;
     align-items: center;
@@ -121,7 +155,7 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
     transform: translateY(-2px);
   }
 
-  .hello-profile {
+  .hello-details {
     display: grid;
     justify-items: center;
     gap: 14px;
@@ -135,18 +169,8 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
     font-size: 16px;
   }
 
-  .hello-photo {
-    width: 84px;
-    height: 84px;
-    margin-top: 0;
-    border-radius: 50%;
-    background: rgb(45 45 45 / 0.15);
-    image-rendering: pixelated;
-    object-fit: cover;
-  }
-
   .hello-name {
-    margin-top: 8px;
+    margin-top: 0;
     color: var(--color-black);
     font-family: "Jost", sans-serif;
     font-size: 20px;
@@ -204,34 +228,10 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
     animation: hello-confetti 900ms ease-out forwards;
   }
 
-  .hello-buttons :global(.button-link.is-spinning) {
-    cursor: wait;
-    opacity: 0.55;
-  }
-
-  .hello-buttons :global(.button-link.is-shaking) {
-    animation: hello-button-shake 260ms ease-in-out;
-  }
-
   @keyframes hello-confetti {
     to {
       opacity: 0;
       transform: translate(var(--confetti-x), var(--confetti-y)) rotate(540deg);
-    }
-  }
-
-  @keyframes hello-button-shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-
-    25% {
-      transform: translateX(-5px);
-    }
-
-    75% {
-      transform: translateX(5px);
     }
   }
 
@@ -241,7 +241,7 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
     }
 
     .hello-buttons,
-    .hello-profile {
+    .hello-details {
       max-width: 420px;
     }
 
@@ -263,14 +263,13 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
 
 <script>
   const confettiButton = document.querySelector("[data-confetti-button]");
-  const profileImage = document.querySelector("[data-profile-image]");
+  const unlockMessage = document.querySelector("[data-unlock-message]");
   const copyButtons = document.querySelectorAll("[data-copy-contact]");
   const confettiColors = ["#ff6b6b", "#f7c948", "#43aa8b", "#5571e6"];
-  const pixelImageNumbers = Array.from({ length: 5 }, (_, index) => index + 1);
-  const spinDelays = [45, 45, 55, 65, 80, 100, 130, 160];
+  const countdown = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
   const copyFeedbackTimeouts = new WeakMap();
-  let currentPixelImage = 1;
-  let isSpinning = false;
+  let countdownIndex = 0;
+  let countdownFeedbackTimeout;
 
   const copyText = async (value) => {
     if (navigator.clipboard?.writeText) {
@@ -291,7 +290,7 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
   const launchConfetti = () => {
     if (!confettiButton) return;
 
-    const bounds = profileImage?.getBoundingClientRect() ?? confettiButton.getBoundingClientRect();
+    const bounds = confettiButton.getBoundingClientRect();
 
     for (let index = 0; index < 42; index += 1) {
       const piece = document.createElement("span");
@@ -299,7 +298,7 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
       const distance = 90 + Math.random() * 150;
 
       piece.className = "hello-confetti-piece";
-      piece.style.setProperty("--confetti-top", `${bounds.top + bounds.height / 2 - 60}px`);
+      piece.style.setProperty("--confetti-top", `${bounds.top + bounds.height / 2}px`);
       piece.style.setProperty("--confetti-left", `${bounds.left + bounds.width / 2}px`);
       piece.style.setProperty("--confetti-x", `${Math.cos(angle) * distance}px`);
       piece.style.setProperty("--confetti-y", `${Math.sin(angle) * distance + 150}px`);
@@ -311,63 +310,29 @@ const robots = "noindex, nofollow, noarchive, nosnippet";
 
   };
 
-  const randomPixelImage = (excludedImage) => {
-    const availablePixelImages = pixelImageNumbers.filter((imageNumber) => imageNumber !== excludedImage);
-    return availablePixelImages[Math.floor(Math.random() * availablePixelImages.length)];
-  };
-
-  const setProfileImage = (imageNumber) => {
-    if (profileImage) profileImage.src = `/images/about/pixel${imageNumber}.webp`;
-  };
-
-  const shakeButton = () => {
+  const flashCountdownButton = () => {
     if (!confettiButton) return;
 
-    confettiButton.classList.remove("is-shaking");
+    window.clearTimeout(countdownFeedbackTimeout);
+    confettiButton.classList.remove("is-counting");
     void confettiButton.offsetWidth;
-    confettiButton.classList.add("is-shaking");
-    confettiButton.addEventListener("animationend", () => confettiButton.classList.remove("is-shaking"), { once: true });
-  };
-
-  const spinProfileImage = () => {
-    if (!confettiButton) return;
-
-    isSpinning = true;
-    confettiButton.classList.add("is-spinning");
-    confettiButton.setAttribute("aria-disabled", "true");
-
-    const finalPixelImage = randomPixelImage(currentPixelImage);
-    let spinningPixelImage = currentPixelImage;
-
-    const showNextImage = (index) => {
-      if (index === spinDelays.length) {
-        currentPixelImage = finalPixelImage;
-        setProfileImage(currentPixelImage);
-        confettiButton.classList.remove("is-spinning");
-        confettiButton.removeAttribute("aria-disabled");
-        isSpinning = false;
-        if (currentPixelImage === 5) launchConfetti();
-        return;
-      }
-
-      const availableImages = pixelImageNumbers.filter(
-        (imageNumber) => imageNumber !== spinningPixelImage && imageNumber !== finalPixelImage,
-      );
-      spinningPixelImage = availableImages[Math.floor(Math.random() * availableImages.length)];
-      setProfileImage(spinningPixelImage);
-      window.setTimeout(() => showNextImage(index + 1), spinDelays[index]);
-    };
-
-    showNextImage(0);
+    confettiButton.classList.add("is-counting");
+    countdownFeedbackTimeout = window.setTimeout(() => confettiButton.classList.remove("is-counting"), 140);
   };
 
   confettiButton?.addEventListener("click", () => {
-    if (isSpinning) {
-      shakeButton();
+    const nextNumber = countdown[countdownIndex];
+
+    if (nextNumber) {
+      flashCountdownButton();
+      confettiButton.textContent = String(nextNumber);
+      countdownIndex += 1;
       return;
     }
 
-    spinProfileImage();
+    launchConfetti();
+    confettiButton.hidden = true;
+    unlockMessage?.removeAttribute("hidden");
   });
 
   copyButtons.forEach((button) => {

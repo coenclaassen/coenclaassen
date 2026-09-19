@@ -5,10 +5,12 @@ interface Props {
   variant?: "primary" | "secondary";
   button?: boolean;
   confettiButton?: boolean;
+  openInNewTab?: boolean;
 }
 
-const { href = "#", label, variant = "primary", button = false, confettiButton = false } = Astro.props;
+const { href = "#", label, variant = "primary", button = false, confettiButton = false, openInNewTab } = Astro.props;
 const isExternal = href.startsWith("http");
+const shouldOpenInNewTab = openInNewTab ?? isExternal;
 ---
 
 {
@@ -24,8 +26,8 @@ const isExternal = href.startsWith("http");
     <a
       class:list={["button-link", variant === "secondary" && "button-link--secondary"]}
       href={href}
-      target={isExternal ? "_blank" : undefined}
-      rel={isExternal ? "noreferrer" : undefined}
+      target={shouldOpenInNewTab ? "_blank" : undefined}
+      rel={shouldOpenInNewTab ? "noreferrer" : undefined}
     >
       <slot>{label}</slot>
     </a>
